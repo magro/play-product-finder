@@ -1,0 +1,32 @@
+@(phones: List[Phone], orderBy: String, query: String)
+@shopMain {
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span2">
+      <!--Sidebar content-->
+
+      Search: <input ng-model="query">
+      Sort by:
+      <select ng-model="orderProp">
+        <option value="name">Alphabetical</option>
+        <option value="age">Newest</option>
+      </select>
+
+    </div>
+    <div class="span10">
+      <!--Body content-->
+
+      <ul class="phones">
+        @for(phone <- phones) {
+        	<li class="thumbnail">
+	          <a href="#/phones/{{phone.id}}" class="thumb"><img src="@routes.Assets.at("shop/" + phone.imageUrl)"></a>
+	          <a href="#/phones/{{phone.id}}">@phone.name</a>
+	          <p>@phone.snippet</p>
+	        </li>
+        }
+      </ul>
+
+    </div>
+  </div>
+</div>
+}
