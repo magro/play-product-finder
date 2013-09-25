@@ -1,6 +1,6 @@
 import play.Project._
 
-name := "play-shop"
+name := "play-webshop"
 
 version := "1.0"
 
