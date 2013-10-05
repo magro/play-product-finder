@@ -20,7 +20,7 @@ import models.Page
 
 object Computer {
 
-  def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 1, filter: String = "*"): Page[(Computer, Option[Company])] = transactional {
+  def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 2, filter: String = "*"): Page[(Computer, Option[Company])] = transactional {
     val pagination =
       paginatedQuery {
         (c: Computer) =>
