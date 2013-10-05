@@ -14,8 +14,8 @@ libraryDependencies ++= Seq(
   jdbc,
   anorm,
   "com.typesafe.play" %% "play-slick" % "0.5.0.3-SNAPSHOT",
-  "net.fwbrasil" %% "activate-play" % "1.4" exclude("org.scala-stm", "scala-stm_2.10.0"),
-  "net.fwbrasil" %% "activate-jdbc" % "1.4"
+  "net.fwbrasil" %% "activate-play" % "1.4.1" exclude("org.scala-stm", "scala-stm_2.10.0"),
+  "net.fwbrasil" %% "activate-jdbc" % "1.4.1"
 )
 
 playScalaSettings
