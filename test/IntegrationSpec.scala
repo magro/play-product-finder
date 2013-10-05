@@ -1,6 +1,3 @@
-package test
-
-import models.activate.computerPersistenceContext._
 import org.specs2.mutable._
 
 import play.api.test._

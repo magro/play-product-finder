@@ -1,19 +1,16 @@
 import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
-
 import play.api.test._
 import play.api.test.Helpers._
-
-import play.api.db.slick.DB
-import slick.session.Session
-import play.api.Play.current
+import models.activate.computerPersistenceContext._
+import net.fwbrasil.activate.statement.Criteria
+import net.fwbrasil.activate.entity.map.MutableEntityMap
 
 @RunWith(classOf[JUnitRunner])
 class ModelSpec extends Specification {
   
-  import models._
-  import models.slick._
+  import models.activate._
 
   // -- Date helpers
   
@@ -21,197 +18,52 @@ class ModelSpec extends Specification {
   
   // --
   
-  "Category model" should {
+  "Computer model" should {
     
-    "be created and retrieved by id" in {
+    "be retrieved by id" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        DB.withSession{ implicit s:Session =>
-          val c = Categories.insert(Category(None, "Phones", Some("description")))
-          c.id must beSome
+        transactional {
+          val id = select[Computer].where(_.name :== "Macintosh").map(_.id).head
           
-          val Some(cat) = Categories.findById(c.id.get)
-          cat must equalTo(c)
+          val Some(macintosh) = byId[Computer](id)
+          macintosh.name must equalTo("Macintosh")
+          macintosh.introduced must beSome.which(dateIs(_, "1984-01-24"))
+
         }
+      }
+    }
+    
+    "be listed along its companies" in {
+      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
         
+        val computers = Computer.list()
+
+        computers.total must equalTo(565)
+        computers.items must have length(10)
+
       }
     }
-
-    "list options" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        DB.withSession{ implicit s:Session =>
-          val c1 = Categories.insert(Category(None, "Phones"))
-          val c2 = Categories.insert(Category(None, "Computers"))
-          
-          def option(c: Category) = (c.id.get.toString, c.name)
-
-          val options = Categories.options
-          options must have length(2)
-          options must containAllOf(List(option(c1), option(c2)))
-        }
-      }
-    }
-
+    
     "be updated if needed" in {
       running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        DB.withSession { implicit s: Session =>
-          val c = Categories.insert(Category(None, "Phone", Some("description")))
-
-          Categories.update(c.id.get, Category(name = "Phones"))
-
-          val Some(cat) = Categories.findById(c.id.get)
-          cat.name must equalTo("Phones")
+        val c = transactional {
+          val c = select[Computer].where(_.name :== "Macintosh", _.introduced isNotNull).head
+          // update { (comp: Computer) => where(comp.id :== c.id) set(comp.name := "The Macintosh", comp.introduced := None) }
+          new MutableEntityMap[Computer]()
+          .put(_.name)("The Macintosh")
+          .put(_.introduced)(None)
+          .updateEntity(c)
+          c
+        }
+        transactional {
+	      // Computer.update(21, Computer(name="The Macintosh", introduced=None, discontinued=None, companyId=Some(1)))
+          val Some(macintosh) = byId[Computer](c.id)
+          macintosh.name must equalTo("The Macintosh")
+          macintosh.introduced must beNone
         }
       }
     }
+
   }
-  
-  "Brand model" should {
-    
-    "be created and retrieved by id" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        DB.withSession{ implicit s:Session =>
-          val item = Brands.insert(Brand(None, "Samsung", Some("description")))
-          item.id must beSome
-          
-          val Some(found) = Brands.findById(item.id.get)
-          found must equalTo(item)
-        }
-        
-      }
-    }
 
-    "list options" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        DB.withSession{ implicit s:Session =>
-          val item1 = Brands.insert(Brand(None, "Samsung"))
-          val item2 = Brands.insert(Brand(None, "Motorola"))
-          
-          def option(c: Brand) = (c.id.get.toString, c.name)
-
-          val options = Brands.options
-          options must have length(2)
-          options must containAllOf(List(option(item1), option(item2)))
-        }
-      }
-    }
-  }
-  
-  
-  "Product model" should {
-    
-    "be created and retrieved by id" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        DB.withSession{ implicit s:Session =>
-          val cat = Categories.insert(Category(None, "Phones"))
-          val brand = Brands.insert(Brand(None, "Samsung"))
-          val item = Products.insert(Product(None, brand.id.get, cat.id.get, "galaxy", "snippet", "description", "imageurl", Nil))
-          item.id must beSome
-          
-          val Some(found) = Products.findById(item.id.get)
-          found must equalTo(item)
-        }
-      }
-    }
-    
-    "return brand and category" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        DB.withSession{ implicit s:Session =>
-//          val cat = Categories.insert(Category(None, "Phones"))
-//          val brand = Brands.insert(Brand(None, "Samsung"))
-//          val item = Products.insert(Product(None, brand.id.get, cat.id.get, "galaxy", "snippet", "description", "imageurl", Nil))
-//          
-//          val Some(found) = Products.findById(item.id.get)
-//          found.category must equalTo(cat)
-//          found.brand must equalTo(brand)
-          skipped
-        }
-      }
-    }
-
-    "find product with attributes" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        DB.withSession{ implicit s:Session =>
-          val cat = Categories.insert(Category(None, "Phones"))
-          val brand = Brands.insert(Brand(None, "Samsung"))
-          val item = Products.insert(Product(None, brand.id.get, cat.id.get, "galaxy", "snippet", "description", "imageurl", Nil))
-          val a1 = ProductAttributes.insert(ProductAttribute(None, item.id.get, "key1", "value1"))
-          val a2 = ProductAttributes.insert(ProductAttribute(None, item.id.get, "key2", "value2"))
-
-          val Some(res) = Products.findWithAttributes(item.id.get)
-
-          res._1 must equalTo(item)
-          res._2 must have length(2)
-          res._2 must containAllOf(List(a1, a2))
-        }
-      }
-    }
-
-    "find product with no attributes" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        DB.withSession{ implicit s:Session =>
-          val cat = Categories.insert(Category(None, "Phones"))
-          val brand = Brands.insert(Brand(None, "Samsung"))
-          val item = Products.insert(Product(None, brand.id.get, cat.id.get, "galaxy", "snippet", "description", "imageurl", Nil))
-
-          val Some(res) = Products.findWithAttributes(item.id.get)
-
-          res._1 must equalTo(item)
-          res._2 must beEmpty
-        }
-      }
-    }
-
-    "be updated if needed" in {
-      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-        DB.withSession { implicit s: Session =>
-          val c = Categories.insert(Category(None, "Phone", Some("description")))
-
-          Categories.update(c.id.get, Category(name = "Phones"))
-
-          val Some(cat) = Categories.findById(c.id.get)
-          cat.name must equalTo("Phones")
-        }
-      }
-    }
-  }
-  
-//  "Computer model" should {
-//    
-//    "be retrieved by id" in {
-//      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-//        
-//        val Some(macintosh) = Computer.findById(21)
-//      
-//        macintosh.name must equalTo("Macintosh")
-//        macintosh.introduced must beSome.which(dateIs(_, "1984-01-24"))  
-//        
-//      }
-//    }
-//    
-//    "be listed along its companies" in {
-//      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-//        
-//        val computers = Computer.list()
-//
-//        computers.total must equalTo(574)
-//        computers.items must have length(10)
-//
-//      }
-//    }
-//    
-//    "be updated if needed" in {
-//      running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-//        
-//        Computer.update(21, Computer(name="The Macintosh", introduced=None, discontinued=None, companyId=Some(1)))
-//        
-//        val Some(macintosh) = Computer.findById(21)
-//        
-//        macintosh.name must equalTo("The Macintosh")
-//        macintosh.introduced must beNone
-//        
-//      }
-//    }
-//    
-//  }
-  
 }

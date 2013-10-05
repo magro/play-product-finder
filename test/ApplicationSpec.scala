@@ -5,10 +5,12 @@ import org.junit.runner._
 import play.api.test._
 import play.api.test.Helpers._
 
+import models.activate.computerPersistenceContext._
+
 @RunWith(classOf[JUnitRunner])
 class ApplicationSpec extends Specification {
   
-  import models._
+  import models.activate._
 
   // -- Date helpers
   
@@ -16,6 +18,8 @@ class ApplicationSpec extends Specification {
   
   // --
   
+  reinitializeContext
+
   "Application" should {
     
     "redirect to the computer list on /" in {
@@ -33,7 +37,7 @@ class ApplicationSpec extends Specification {
         val result = controllers.Application.list(0, 2, "")(FakeRequest())
 
         status(result) must equalTo(OK)
-        contentAsString(result) must contain("574 computers found")
+        contentAsString(result) must contain("565 computers found")
         
       }      
     }
@@ -56,17 +60,21 @@ class ApplicationSpec extends Specification {
         
         status(badResult) must equalTo(BAD_REQUEST)
         
+        val apple = transactional {
+          select[Company].where(_.name :== "Apple Inc.").head
+        }
+
         val badDateFormat = controllers.Application.save(
-          FakeRequest().withFormUrlEncodedBody("name" -> "FooBar", "introduced" -> "badbadbad", "company" -> "1")
+          FakeRequest().withFormUrlEncodedBody("name" -> "FooBar", "introduced" -> "badbadbad", "company" -> apple.id)
         )
         
         status(badDateFormat) must equalTo(BAD_REQUEST)
-        contentAsString(badDateFormat) must contain("""<option value="1" selected>Apple Inc.</option>""")
+        contentAsString(badDateFormat) must contain(s"""<option value="${apple.id}" selected>Apple Inc.</option>""")
         contentAsString(badDateFormat) must contain("""<input type="text" id="introduced" name="introduced" value="badbadbad" >""")
         contentAsString(badDateFormat) must contain("""<input type="text" id="name" name="name" value="FooBar" >""")
         
         val result = controllers.Application.save(
-          FakeRequest().withFormUrlEncodedBody("name" -> "FooBar", "introduced" -> "2011-12-24", "company" -> "1")
+          FakeRequest().withFormUrlEncodedBody("name" -> "FooBar", "introduced" -> "2011-12-24", "company" -> apple.id)
         )
         
         status(result) must equalTo(SEE_OTHER)
