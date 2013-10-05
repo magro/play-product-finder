@@ -20,9 +20,16 @@ class CreateSchema extends Migration {
 
 class SeedData extends Migration {
 
-  def timestamp = System.currentTimeMillis + 100
+  override def timestamp = System.currentTimeMillis + 100
 
-  def up = {
+  override def down = {
+    customScript {
+      all[Computer].foreach(_.delete)
+      all[Company].foreach(_.delete)
+    }
+  }
+
+  override def up = {
     customScript {
       val companies = MutableMap[Int, Company]()
       companies += (1 -> new Company("Apple Inc."))
