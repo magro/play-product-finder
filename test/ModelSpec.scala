@@ -49,10 +49,8 @@ class ModelSpec extends Specification {
         val c = transactional {
           val c = select[Computer].where(_.name :== "Macintosh", _.introduced isNotNull).head
           // update { (comp: Computer) => where(comp.id :== c.id) set(comp.name := "The Macintosh", comp.introduced := None) }
-          new MutableEntityMap[Computer]()
-          .put(_.name)("The Macintosh")
-          .put(_.introduced)(None)
-          .updateEntity(c)
+          c.name = "The Macintosh"
+          c.introduced = None
           c
         }
         transactional {
