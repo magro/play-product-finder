@@ -5,16 +5,30 @@ import net.fwbrasil.activate.migration.Migration
 import scala.collection.mutable.{ Map => MutableMap }
 import java.util.Date
 import java.text.SimpleDateFormat
+import net.fwbrasil.activate.migration.IfExists
 
 class CreateSchema extends Migration {
 
   def timestamp = System.currentTimeMillis
 
   def up = {
-    removeAllEntitiesTables
-      .ifExists
-    createTableForAllEntities
-      .ifNotExists
+    // table("ProductAttribute").removeTable.ifExists
+    table("Product").removeTable.ifExists.cascade
+    table("product_attributes").removeTable.ifExists.cascade
+    table("product").removeTable.ifExists.cascade
+    table("product_attribute").removeTable.ifExists.cascade
+    table("product").removeTable.ifExists.cascade
+    
+    removeReferencesForAllEntities.ifExists
+    removeAllEntitiesTables.ifExists
+    createTableForAllEntities.ifNotExists
+    createReferencesForAllEntities.ifNotExists
+    
+    // foreign keys for nested lists are not automatically created...
+    // table("product_attributes").addReference("value", table[ProductAttribute], "product_attribute_fk").ifNotExists
+//    table[Product].addReference("brand", table[Brand], "product_brand_fk").ifNotExists
+//    table[Product].addReference("category", table[Category], "product_category_fk").ifNotExists
+//    table[Product].addReference("category", table[Category], "product_category_fk").ifNotExists
   }
 }
 

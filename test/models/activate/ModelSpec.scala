@@ -1,29 +1,31 @@
+package models.activate
+
 import org.specs2.mutable._
 import org.specs2.runner._
 import org.junit.runner._
 import play.api.test._
 import play.api.test.Helpers._
-// import models.activate.computerPersistenceContext._
-import net.fwbrasil.activate.statement.Criteria
-import net.fwbrasil.activate.entity.map.MutableEntityMap
+import computerPersistenceContext._
+import net.fwbrasil.activate.test._
 
 @RunWith(classOf[JUnitRunner])
-class ModelSpec extends Specification with ActivateSpecification {
+class ModelSpec extends Specification with ActivateTest {
   
-  import models.activate._
-
   // -- Date helpers
 
   def dateIs(date: java.util.Date, str: String) = new java.text.SimpleDateFormat("yyyy-MM-dd").format(date) == str
 
   // --
+  
+  override def strategy: Strategy = recreateDatabaseStrategy
+  override def context(app: play.api.Application) = computerPersistenceContext
 
   // reinitializeContext
 
   "Computer model" should {
 
-    "be retrieved by id" inRunningApp {
-	  import models.activate.computerPersistenceContext._
+    "be retrieved by id" inActivate {
+	  import computerPersistenceContext._
 	  transactional {
 		val id = select[Computer].where(_.name :== "Macintosh").map(_.id).head
 
@@ -33,7 +35,7 @@ class ModelSpec extends Specification with ActivateSpecification {
       }
     }
 
-    "be listed along its companies" inRunningApp {
+    "be listed along its companies" inActivate {
 
       val computers = Computer.list()
 
@@ -42,9 +44,9 @@ class ModelSpec extends Specification with ActivateSpecification {
 
     }
 
-    "be updated if needed" inRunningApp {
+    "be updated if needed" inActivate {
 
-      import models.activate.computerPersistenceContext._
+      import computerPersistenceContext._
       val c = transactional {
         val c = select[Computer].where(_.name :== "Macintosh", _.introduced isNotNull).head
         // update { (comp: Computer) => where(comp.id :== c.id) set(comp.name := "The Macintosh", comp.introduced := None) }

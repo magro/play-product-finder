@@ -3,9 +3,10 @@ import org.specs2.runner._
 import org.junit.runner._
 import play.api.test._
 import play.api.test.Helpers._
+import net.fwbrasil.activate.test._
 
 @RunWith(classOf[JUnitRunner])
-class ApplicationSpec extends Specification with ActivateSpecification {
+class ApplicationSpec extends Specification with ActivateTest {
   
   import models.activate._
 
@@ -14,10 +15,13 @@ class ApplicationSpec extends Specification with ActivateSpecification {
   def dateIs(date: java.util.Date, str: String) = new java.text.SimpleDateFormat("yyyy-MM-dd").format(date) == str
   
   // --
+  
+  override def strategy: Strategy = recreateDatabaseStrategy
+  override def context(app: play.api.Application) = models.activate.computerPersistenceContext
 
   "Application" should {
     
-    "redirect to the computer list on /" inRunningApp {
+    "redirect to the computer list on /" inActivate {
 
       val result = controllers.Application.index(FakeRequest())
 
@@ -26,7 +30,7 @@ class ApplicationSpec extends Specification with ActivateSpecification {
 
     }
 
-    "list computers on the the first page" inRunningApp {
+    "list computers on the the first page" inActivate {
 
       val result = controllers.Application.list(0, 2, "")(FakeRequest())
 
@@ -35,7 +39,7 @@ class ApplicationSpec extends Specification with ActivateSpecification {
 
     }
     
-    "filter computer by name" inRunningApp {
+    "filter computer by name" inActivate {
 
       val result = controllers.Application.list(0, 2, "Apple")(FakeRequest())
 
@@ -44,7 +48,7 @@ class ApplicationSpec extends Specification with ActivateSpecification {
 
     }
     
-    "create new computer" inRunningApp {
+    "create new computer" inActivate {
 
       val badResult = controllers.Application.save(FakeRequest())
 

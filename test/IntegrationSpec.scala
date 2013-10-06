@@ -1,19 +1,22 @@
 import org.specs2.mutable._
-
 import play.api.test._
 import play.api.test.Helpers._
-
 import org.fluentlenium.core.filter.FilterConstructor._
+import models.activate.ActivateSpecification
+import net.fwbrasil.activate.test._
 
 // import models.activate.computerPersistenceContext._
 
-class IntegrationSpec extends Specification with ActivateSpecification {
+class IntegrationSpec extends Specification with ActivateTest {
 
   // reinitializeContext
+  
+  override def strategy: Strategy = recreateDatabaseStrategy
+  override def context(app: play.api.Application) = models.activate.computerPersistenceContext
 
   "Application" should {
 
-    "work from within a browser" inBrowser { browser =>
+    "work from within a browser" inBrowserWithActivate { browser =>
 
       browser.goTo("http://localhost:3333/")
 

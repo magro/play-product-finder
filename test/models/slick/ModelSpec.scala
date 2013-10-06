@@ -16,6 +16,8 @@ import models._
 @RunWith(classOf[JUnitRunner])
 class SlickModelSpec extends Specification {
   
+  args(skipAll = true)
+  
   import models._
 
   // -- Date helpers
