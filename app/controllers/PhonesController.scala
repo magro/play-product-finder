@@ -11,10 +11,11 @@ import play.api.libs.ws.WS
 import play.api.libs.json._
 import java.io.File
 import java.nio.file.Paths
+import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 object PhonesController extends Controller {
 
-  def list() = Action { implicit request =>
+  def listOld() = Action { implicit request =>
     // val phones = List(Phone(1, "foo", "foo", "snippet", "imageurl"))
 
     val f = Paths.get(new File(".").getAbsolutePath(), "public", "phones", "phones.json").normalize().toString()
@@ -23,6 +24,13 @@ object PhonesController extends Controller {
     // implicit val r: Reads[List[Phone]] = 
     val phones = Json.parse(text).as[List[Phone]]
     Ok(html.phoneList(phones, "orderBy", "query"))
+  }
+
+  def list(query: String) = Action.async { implicit request =>
+    // val phones = List(Phone(1, "foo", "foo", "snippet", "imageurl"))
+    FcspShop.search(query).map{ products =>
+      Ok(html.productList(products, "orderBy", "query"))
+    }
   }
 
   def load() = Action {
