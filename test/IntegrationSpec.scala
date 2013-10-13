@@ -2,7 +2,6 @@ import org.specs2.mutable._
 import play.api.test._
 import play.api.test.Helpers._
 import org.fluentlenium.core.filter.FilterConstructor._
-import models.activate.ActivateSpecification
 import net.fwbrasil.activate.test._
 
 // import models.activate.computerPersistenceContext._
