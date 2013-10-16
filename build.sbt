@@ -16,6 +16,7 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick" % "0.5.0.3-SNAPSHOT",
   "net.fwbrasil" %% "activate-play" % "1.4.1" exclude("org.scala-stm", "scala-stm_2.10.0"),
   "net.fwbrasil" %% "activate-jdbc" % "1.4.1",
+  "net.fwbrasil" %% "activate-jdbc-async" % "1.4.1",
   "postgresql" % "postgresql" % "9.1-901-1.jdbc4",
   "nu.validator.htmlparser" % "htmlparser" % "1.4",
   "org.scalesxml" %% "scales-xml" % "0.6.0-M1",
@@ -25,6 +26,9 @@ libraryDependencies ++= Seq(
 )
 
 playScalaSettings
+
+// From activate-example-play-async
+// Keys.fork in Test := false
 
 // val root = project
 // 
