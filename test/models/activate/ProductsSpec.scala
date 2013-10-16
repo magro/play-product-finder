@@ -136,7 +136,12 @@ class ProductsSpec extends Specification with ActivateTest {
         val Some(product) = byId[Product](p.id)
         product must equalTo(p)
         product.attributes must have length(2)
-        product.attributes must containAllOf(as)
+        val a1 = product.attributes.take(1).head
+        a1.name must equalTo("key1")
+        a1.value must equalTo("value1")
+        val a2 = product.attributes.drop(1).head
+        a2.name must equalTo("key2")
+        a2.value must equalTo("value2")
       }
     }
 

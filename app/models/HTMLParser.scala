@@ -4,10 +4,57 @@ import org.xml.sax.InputSource
 import scala.xml._
 import parsing._
 
+import scales.utils._
+import scales.utils.ScalesUtils._
+import scales.xml._
+import scales.xml.ScalesXml._
+import scales.xml.jaxen._
+import scales.utils.resources.SimpleUnboundedPool
+import scales.xml.parser.sax.DefaultSaxSupport
+
 object Foo extends App {
   val source = Source.fromString(
-  "<html><head/><body><div class='main'><span>test</span></div></body></html>")
-  println(new HTMLParser().loadXML(source))
+  """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+     <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" xml:lang="de"><head/><body><div id="content"><div class="main">foo</div></div></body></html>""")
+  
+//  val xml = new HTMLParser().loadXML(source)
+//  println(xml)
+    
+  val doc = loadXmlReader(source, strategy = defaultPathOptimisation, parsers = NuValidatorFactoryPool)
+  val root = top(doc)
+  // println(root)
+     
+    /*
+    val strPath = ScalesXPath("/ns:html/ns:body/ns:p[2]/ns:table[2]/ns:tbody/ns:tr/ns:td/ns:table/ns:tbody/ns:tr/ns:td[1]/ns:a/ns:font/text()", 
+		ns.prefixed("ns")) 
+
+	// all the 9 text nodes 
+	val strRes = strPath.evaluate(root) 
+      */
+  val ns = Namespace("http://www.w3.org/1999/xhtml")
+  
+  println(ScalesXPath("//body//*[@class='main']/@class").withNameConversion(ScalesXPath.localOnly).evaluate(root).head.left.get.attribute.value)
+  println(ScalesXPath("//body//*[@class='main']/text()").withNameConversion(ScalesXPath.localOnly).evaluate(root).head.right.get.item.value)
+  
+  val ctxt = ScalesXPath("//body/div").withNameConversion(ScalesXPath.localOnly).xmlPaths(root).head
+  println(ScalesXPath("//*[@class='main']/text()").withNameConversion(ScalesXPath.localOnly).evaluate(ctxt).head.right.get.item.value)
+  
+//  val ns = Namespace("http://www.w3.org/1999/xhtml") 
+//  println(ScalesXPath("//body", ns.prefixed("")).evaluate(root))
+}
+
+object NuValidatorFactoryPool extends SimpleUnboundedPool[org.xml.sax.XMLReader] with DefaultSaxSupport {
+  def create = {
+
+    import nu.validator.htmlparser.{ sax, common }
+    import sax.HtmlParser
+    import common.XmlViolationPolicy
+
+    val reader = new HtmlParser
+    reader.setXmlPolicy(XmlViolationPolicy.ALLOW)
+    reader.setXmlnsPolicy(XmlViolationPolicy.ALLOW)
+    reader
+  }
 }
 
 private class HTMLParser extends NoBindingFactoryAdapter {
