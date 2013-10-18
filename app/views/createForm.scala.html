@@ -1,4 +1,4 @@
-@(computerForm: Form[net.fwbrasil.activate.play.EntityData[models.activate.Computer]], companies: Seq[(String, String)])
+@(shopForm: Form[net.fwbrasil.activate.play.EntityData[activate.Shop]])
 
 @import helper._
 
@@ -6,29 +6,29 @@
 
 @main {
     
-    <h1>Add a computer</h1>
+    <h1>Add a shop</h1>
     
-    @form(routes.Application.save()) {
+    @form(routes.ShopsController.save()) {
         
         <fieldset>
         
-            @inputText(computerForm("name"), '_label -> "Computer name")
-            @inputText(computerForm("introduced"), '_label -> "Introduced date")
-            @inputText(computerForm("discontinued"), '_label -> "Discontinued date")
-
-            @select(
-                computerForm("company"), 
-                companies, 
-                '_label -> "Company", '_default -> "-- Choose a company --",
-                '_showConstraints -> false
-            )
+            @inputText(shopForm("name"), '_label -> "Shop Name")
+            @inputText(shopForm("url"), '_label -> "URL")
+            @checkbox(shopForm("active"), '_label -> "Active")
+            @inputText(shopForm("queryUrlTemplate"), '_label -> "Query Url Template")
+            @inputText(shopForm("imageUrlBase"), '_label -> "Image Url Base")
             
+            @inputText(shopForm("itemXPath"), '_label -> "XPath Item")
+            @inputText(shopForm("nameXPath"), '_label -> "XPath Name")
+            @inputText(shopForm("priceXPath"), '_label -> "XPath Price")
+            @inputText(shopForm("imageUrlXPath"), '_label -> "XPath Image Url")
+            @inputText(shopForm("detailsUrlXPath"), '_label -> "XPath Details Url")
 
         </fieldset>
         
         <div class="actions">
-            <input type="submit" value="Create this computer" class="btn primary"> or 
-            <a href="@routes.Application.list()" class="btn">Cancel</a> 
+            <input type="submit" value="Create this shop" class="btn primary"> or 
+            <a href="@routes.ShopsController.list()" class="btn">Cancel</a> 
         </div>
         
     }

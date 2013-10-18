@@ -2,24 +2,24 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Default path will just redirect to the computer list
-GET     /                           controllers.Application.index
+# Default path will just redirect to the shop list
 
-GET		/search						controllers.PhonesController.list(query ?= "")
+GET		/index						controllers.ShopsController.index()
 
-# Computers list (look at the default values for pagination parameters)
-GET     /computers                  controllers.Application.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
+GET		/search						controllers.ProductsController.search(query ?= "")
 
-# Add computer
-GET     /computers/new              controllers.Application.create
-POST    /computers                  controllers.Application.save
+GET		/shops						controllers.ShopsController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
 
-# Edit existing computer
-GET     /computers/:id              controllers.Application.edit(id: String)
-POST    /computers/:id              controllers.Application.update(id: String)
+# Add shop
+GET     /shops/new					controllers.ShopsController.create
+POST    /shops						controllers.ShopsController.save
 
-# Delete a computer
-POST    /computers/:id/delete       controllers.Application.delete(id: String)
+# Edit existing shop
+GET     /shops/:id					controllers.ShopsController.edit(id:String)
+POST    /shops/:id					controllers.ShopsController.update(id:String)
+
+# Delete a shop
+POST    /shops/:id/delete			controllers.ShopsController.delete(id:String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

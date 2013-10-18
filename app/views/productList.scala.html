@@ -5,7 +5,7 @@
     <div class="span2">
       <!--Sidebar content-->
 
-      @helper.form(action=routes.PhonesController.list()) {
+      @helper.form(action=routes.ProductsController.search()) {
       Search: <input type="search" name="query" value="@query" />
       Sort by:
       <select ng-model="orderProp">
@@ -21,14 +21,13 @@
 
       <ul class="phones">
         @for(product <- products) {
-        	<li class="thumbnail">
-	          <a href="@product.detailsUrl">
-	          	<img class="thumb"
-	          	  style="background-size: 100%; background-position: 50% 50%; background-repeat: no-repeat; background-image: url(@product.imageUrl)" />
-	          </a>
-	          <a href="#/phones/{{phone.id}}">@product.name</a>
-	          <p>@product.price</p>
-	        </li>
+          <li class="thumbnail">
+            <a href="@product.detailsUrl">
+              <img class="thumb" style="background-size: 100%; background-position: 50% 50%; background-repeat: no-repeat; background-image: url(@product.imageUrl)" />
+            </a>
+            <a href="#/phones/{{phone.id}}">@product.name</a>
+            <p>@product.price</p>
+          </li>
         }
       </ul>
 

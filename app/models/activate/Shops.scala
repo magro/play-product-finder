@@ -1,7 +1,7 @@
 package models.activate
 
 import java.util.Date
-import computerPersistenceContext._
+import shopPersistenceContext._
 import scales.xml.jaxen.ScalesXPath
 import _root_.models.ScrapingDescription
 
@@ -23,9 +23,12 @@ object ShopScrapingDescription {
       priceXPath = localXPath(shop.priceXPath), imageUrlXPath = localXPath(shop.imageUrlXPath),
       detailsUrlXPath = localXPath(shop.detailsUrlXPath))
 }
-  
+
+@Alias("shop")
 class Shop(
   var name: String,
+  var url: String,
+  var queryUrlTemplate: String,
   var imageUrlBase: Option[String],
   var active: Boolean = false,
   var itemXPath: String,
