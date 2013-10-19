@@ -25,7 +25,10 @@ trait WebShop extends ScrapingDescription {
 object WebShops {
 
   import play.api.libs.concurrent.Execution.Implicits.defaultContext
+  import activate.shopPersistenceContext._
 
-  def findActive(): Future[Seq[WebShop]] = Shop.findAll.map(_.map(_.scrapingDescription))
+  def findActive(): Future[Seq[WebShop]] = asyncTransactionalChain { implicit ctx =>
+    Shop.findAll.map(_.map(_.scrapingDescription))
+  }
 
 }

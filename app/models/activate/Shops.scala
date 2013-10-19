@@ -44,7 +44,7 @@ class Shop(
 
 object Shop {
   
-  def findAll: Future[Seq[Shop]] = asyncTransactionalChain { implicit ctx =>
+  def findAll(implicit ctx: TransactionalExecutionContext): Future[Seq[Shop]] = {
     asyncQuery { (s: Shop) => where(s.active :== true) select (s) orderBy (s.id) }
   }
 
