@@ -2,6 +2,7 @@ package models
 
 import scales.xml.jaxen.ScalesXPath
 import scala.concurrent.Future
+import models.activate.Shop
 
 object FcspShop extends WebShop {
 
@@ -22,5 +23,9 @@ trait WebShop extends ScrapingDescription {
 }
 
 object WebShops {
-  def findActive(): Future[Seq[WebShop]] = Future.successful(List(FcspShop))
+
+  import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
+  def findActive(): Future[Seq[WebShop]] = Shop.findAll.map(_.map(_.scrapingDescription))
+
 }

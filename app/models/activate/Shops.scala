@@ -4,14 +4,14 @@ import java.util.Date
 import shopPersistenceContext._
 import scales.xml.jaxen.ScalesXPath
 import _root_.models.ScrapingDescription
-
 import models.Page
 import net.fwbrasil.radon.transaction.TransactionalExecutionContext
 import scala.concurrent.Future
+import models.WebShop
 
 case class ShopScrapingDescription(imageUrlBase: Option[String],
   itemXPath: ScalesXPath, nameXPath: ScalesXPath, priceXPath: ScalesXPath,
-  imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends ScrapingDescription
+  imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends WebShop
 
 object ShopScrapingDescription {
   
@@ -43,6 +43,10 @@ class Shop(
 }
 
 object Shop {
+  
+  def findAll: Future[Seq[Shop]] = asyncTransactionalChain { implicit ctx =>
+    asyncQuery { (s: Shop) => where(s.active :== true) select (s) orderBy (s.creationDate) }
+  }
 
   def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 2, filter: String = "*")(implicit ctx: TransactionalExecutionContext): Future[Page[Shop]] = {
     val pagination = asyncPaginatedQuery { (s: Shop) =>
