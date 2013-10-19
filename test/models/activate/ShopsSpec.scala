@@ -9,7 +9,7 @@ import net.fwbrasil.activate.test._
 import scala.concurrent.Future
 
 @RunWith(classOf[JUnitRunner])
-class ShopsSpec extends Specification with ActivateTest
+class ShopsSpec extends Specification with AsyncActivateTest
 	with DefaultAwaitTimeout with FutureAwaits {
   
   // -- Date helpers
@@ -18,14 +18,14 @@ class ShopsSpec extends Specification with ActivateTest
 
   // --
   
-  override def strategy: Strategy = recreateDatabaseStrategy
+  override def strategy: Strategy = asyncCleanDatabaseStrategy
   override def context(app: play.api.Application) = shopPersistenceContext
 
   // reinitializeContext
 
   "Shop model" should {
     
-    def newShop(name: String) = new Shop(name, None, false, "item", "name", "price", "imageUrl", "detailsUrl")
+    def newShop(name: String, active: Boolean = false) = new Shop(name, "url", "queryUrlTemplate", None, active, "item", "name", "price", "imageUrl", "detailsUrl")
 
     "be created and retrieved by id" inActivate {
       import shopPersistenceContext._
@@ -36,6 +36,51 @@ class ShopsSpec extends Specification with ActivateTest
         val Some(shop) = byId[Shop](item.id)
         shop.name must equalTo("shop1")
       }
+    }
+
+    "be created and retrieved by id async" inActivate {
+      import shopPersistenceContext._
+	  val item = await(asyncTransactionalChain { implicit ctx =>
+        Future.successful(newShop("shop1"))
+      })
+      val Some(shop) = await(asyncTransactionalChain { implicit ctx =>
+        asyncById[Shop](item.id)
+      })
+      shop.name must equalTo("shop1")
+    }
+
+    "be created and selected async" inActivate {
+      import shopPersistenceContext._
+	  val item = await(asyncTransactionalChain { implicit ctx =>
+        Future.successful(newShop("shop1"))
+      })
+      val shops = await(asyncTransactionalChain { implicit ctx =>
+        asyncSelect[Shop] where(_.id :== item.id)
+      })
+      shops must contain(item)
+    }
+
+    "be created and queried async" inActivate {
+      import shopPersistenceContext._
+	  val item = await(asyncTransactionalChain { implicit ctx =>
+        Future.successful(newShop("shop1"))
+      })
+      val shops = await(asyncTransactionalChain { implicit ctx =>
+        asyncQuery { (s: Shop) => where(s.id :== item.id) select (s) }
+      })
+      shops must contain(item)
+    }
+
+    "findAll active async" inActivate {
+      import shopPersistenceContext._
+	  val (s1, s2) = await(asyncTransactionalChain { implicit ctx =>
+        Future.successful((newShop("shop1", true), newShop("shop2")))
+      })
+      val shops = await(asyncTransactionalChain { implicit ctx =>
+        Shop.findActive
+      })
+      shops must have length(1)
+      shops must containAllOf(List(s1))
     }
 
     "be listed async" inActivate {

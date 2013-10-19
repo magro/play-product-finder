@@ -6,8 +6,6 @@ import play.api.test._
 import play.api.test.Helpers._
 import play.api.GlobalSettings
 
-import models.activate.computerPersistenceContext._
-
 import net.fwbrasil.activate.migration.StorageVersion
 import net.fwbrasil.activate.storage.memory.TransientMemoryStorage
 import net.fwbrasil.activate.storage.relational.PooledJdbcRelationalStorage
@@ -18,16 +16,12 @@ import net.fwbrasil.activate.storage.relational.PooledJdbcRelationalStorage
 trait ActivateSpecification { self: Specification  =>
   
   def withNewDatabase[T](clearData: Boolean, block: => T): T = {
-    import models.activate.computerPersistenceContext._
+    import models.activate.shopPersistenceContext._
 
     if (clearData) {
       if (storage.isInstanceOf[PooledJdbcRelationalStorage]) {
         transactional {
-          all[Computer].foreach(_.delete)
-          all[Company].foreach(_.delete)
-          all[Product].foreach(_.delete)
-          all[Category].foreach(_.delete)
-          all[Brand].foreach(_.delete)
+          all[Shop].foreach(_.delete)
         }
       } else if (storage.isInstanceOf[TransientMemoryStorage])
         storage.asInstanceOf[TransientMemoryStorage].directAccess.clear()
@@ -41,22 +35,10 @@ trait ActivateSpecification { self: Specification  =>
   }
 
   def withSeededDatabase[T](seed: => Unit)(block: => T) = withNewDatabase(true, {
-    import models.activate.computerPersistenceContext._
+    import models.activate.shopPersistenceContext._
     transactional(seed)
     block
   })
-  
-  def category(categoryName: String): Category = {
-    import models.activate.computerPersistenceContext._
-    val items = select[Category].where(_.name :== categoryName)
-    items.headOption.getOrElse(new Category(categoryName))
-  }
-  
-  def brand(brandName: String): Brand = {
-    import models.activate.computerPersistenceContext._
-    val items = select[Brand].where(_.name :== brandName)
-    items.headOption.getOrElse(new Brand(brandName))
-  }
 
   def fakeApp = FakeApplication(
     // withGlobal = Some(new GlobalSettings {}),

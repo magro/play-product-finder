@@ -28,7 +28,7 @@ object WebShops {
   import activate.shopPersistenceContext._
 
   def findActive(): Future[Seq[WebShop]] = asyncTransactionalChain { implicit ctx =>
-    Shop.findAll.map(_.map(_.scrapingDescription))
+    Shop.findActive.map(_.map(_.scrapingDescription))
   }
 
 }

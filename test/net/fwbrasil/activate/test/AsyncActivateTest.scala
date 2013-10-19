@@ -11,51 +11,34 @@ import net.fwbrasil.activate.migration.ManualMigration
 import net.fwbrasil.activate.ActivateContext
 import net.fwbrasil.activate.migration.StorageVersion
 import net.fwbrasil.activate.storage.memory.TransientMemoryStorage
-import net.fwbrasil.activate.storage.relational.PooledJdbcRelationalStorage
+import net.fwbrasil.activate.storage.relational.async.AsyncPostgreSQLStorage
+import net.fwbrasil.radon.transaction.TransactionalExecutionContext
 
-
-trait Strategy {
-  def runTest[R](seed: => Option[() => Unit], f: => R)(implicit context: ActivateContext): R
-}
-
-object transactionRollbackStrategy extends Strategy {
-  def runTest[R](seed: => Option[() => Unit] = None, f: => R)(implicit ctx: ActivateContext) = {
-    import ctx._
-    val transaction = new Transaction
-    try {
-      seed.foreach(s => transactional(transaction)(s()))
-      transactional(transaction)(f)
-    }
-    finally transaction.rollback
-  }
-}
-
-object cleanDatabaseStrategy extends Strategy {
+object asyncCleanDatabaseStrategy extends Strategy {
   
   def runTest[R](seed: => Option[() => Unit] = None, f: => R)(implicit ctx: ActivateContext) = {
     import ctx._
     cleanDatabase
     ctx.reinitializeContext
-    seed.foreach(s => transactional(s()))
+    seed.foreach(s => asyncTransactional(s()))
     transactional(f)
   }
 
   def cleanDatabase(implicit ctx: ActivateContext) {
     import ctx._
-    if (storage.isInstanceOf[PooledJdbcRelationalStorage]) {
+    if (storage.isInstanceOf[AsyncPostgreSQLStorage]) {
       transactional {
         // TODO: find a better way to dynamically delete all entities
         import models.activate._
         all[Shop].foreach(_.delete)
       }
-    } else if (storage.isInstanceOf[TransientMemoryStorage])
-      storage.asInstanceOf[TransientMemoryStorage].directAccess.clear()
+    }
     else
       throw new IllegalStateException("Unsupported storage type " + storage.getClass())
   }
 }
 
-object recreateDatabaseStrategy extends Strategy {
+object asyncRecreateDatabaseStrategy extends Strategy {
 
   def runTest[R](seed: => Option[() => Unit] = None, f: => R)(implicit ctx: ActivateContext) = {
     import ctx._
@@ -63,12 +46,12 @@ object recreateDatabaseStrategy extends Strategy {
     resetStorageVersion
     ctx.reinitializeContext
     ctx.runMigration
-    seed.foreach(s => transactional(s()))
+    seed.foreach(s => asyncTransactional(s()))
     transactional(f)
   }
 
   def resetStorageVersion(implicit ctx: ActivateContext) =
-    ctx.transactional {
+    ctx.asyncTransactional {
       val storageVersion = Migration.storageVersionCache(ctx.name)
       storageVersion.lastScript = -1
       storageVersion.lastAction = -1
@@ -83,7 +66,7 @@ object recreateDatabaseStrategy extends Strategy {
     }.execute
 }
 
-trait ActivateTest { self: Specification =>
+trait AsyncActivateTest { self: Specification =>
 
   def strategy: Strategy = recreateDatabaseStrategy
 
@@ -104,7 +87,7 @@ trait ActivateTest { self: Specification =>
     }
 
     // TODO: it would be nice to be able to take the seed data just lazily (seed: => Unit), without forcing it to be a function
-    def inActivateWithSeed[R](seed: () => Unit, f: => R)(implicit evidence$1: org.specs2.execute.AsResult[R]): org.specs2.specification.Example = {
+    def inActivateWithSeed[R](seed: () => Unit)(f: => R)(implicit evidence$1: org.specs2.execute.AsResult[R]): org.specs2.specification.Example = {
       self.inExample(thing).in {
         implicit val app = fakeApp
         running(app)(strategy.runTest(Some(seed), f)(context(app)))

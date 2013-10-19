@@ -11,7 +11,7 @@ class IntegrationSpec extends Specification with ActivateTest {
   // reinitializeContext
   
   override def strategy: Strategy = recreateDatabaseStrategy
-  override def context(app: play.api.Application) = models.activate.computerPersistenceContext
+  override def context(app: play.api.Application) = models.activate.shopPersistenceContext
 
   "Application" should {
 
