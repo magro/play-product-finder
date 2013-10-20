@@ -4,7 +4,7 @@
 
 # Default path will just redirect to the shop list
 
-GET		/index						controllers.ShopsController.index()
+GET		/							controllers.ShopsController.index()
 
 GET		/search						controllers.ProductsController.search(query ?= "")
 
