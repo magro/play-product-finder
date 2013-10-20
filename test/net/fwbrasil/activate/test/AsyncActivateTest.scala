@@ -21,7 +21,7 @@ object asyncCleanDatabaseStrategy extends Strategy {
     cleanDatabase
     ctx.reinitializeContext
     seed.foreach(s => asyncTransactional(s()))
-    transactional(f)
+    f
   }
 
   def cleanDatabase(implicit ctx: ActivateContext) {
@@ -47,7 +47,7 @@ object asyncRecreateDatabaseStrategy extends Strategy {
     ctx.reinitializeContext
     ctx.runMigration
     seed.foreach(s => asyncTransactional(s()))
-    transactional(f)
+    f
   }
 
   def resetStorageVersion(implicit ctx: ActivateContext) =

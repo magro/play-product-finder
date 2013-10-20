@@ -29,7 +29,7 @@ class ShopsSpec extends Specification with AsyncActivateTest
 
     "be created and retrieved by id" inActivate {
       import shopPersistenceContext._
-	  val item = transactional {
+      val item = transactional {
         newShop("shop1")
       }
       transactional {
@@ -40,20 +40,20 @@ class ShopsSpec extends Specification with AsyncActivateTest
 
     "be created and retrieved by id async" inActivate {
       import shopPersistenceContext._
-	  val item = await(asyncTransactionalChain { implicit ctx =>
-        Future.successful(newShop("shop1"))
-      })
-      val Some(shop) = await(asyncTransactionalChain { implicit ctx =>
+      val item = transactional {
+        newShop("shop1")
+      }
+      val shop = await(asyncTransactionalChain { implicit ctx =>
         asyncById[Shop](item.id)
       })
-      shop.name must equalTo("shop1")
+      shop must beSome(item)
     }
 
     "be created and selected async" inActivate {
       import shopPersistenceContext._
-	  val item = await(asyncTransactionalChain { implicit ctx =>
-        Future.successful(newShop("shop1"))
-      })
+      val item = transactional {
+        newShop("shop1")
+      }
       val shops = await(asyncTransactionalChain { implicit ctx =>
         asyncSelect[Shop] where(_.id :== item.id)
       })
@@ -62,9 +62,9 @@ class ShopsSpec extends Specification with AsyncActivateTest
 
     "be created and queried async" inActivate {
       import shopPersistenceContext._
-	  val item = await(asyncTransactionalChain { implicit ctx =>
-        Future.successful(newShop("shop1"))
-      })
+      val item = transactional {
+        newShop("shop1")
+      }
       val shops = await(asyncTransactionalChain { implicit ctx =>
         asyncQuery { (s: Shop) => where(s.id :== item.id) select (s) }
       })
@@ -73,9 +73,9 @@ class ShopsSpec extends Specification with AsyncActivateTest
 
     "findAll active async" inActivate {
       import shopPersistenceContext._
-	  val (s1, s2) = await(asyncTransactionalChain { implicit ctx =>
-        Future.successful((newShop("shop1", true), newShop("shop2")))
-      })
+      val (s1, s2) = transactional {
+        (newShop("shop1", true), newShop("shop2"))
+      }
       val shops = await(asyncTransactionalChain { implicit ctx =>
         Shop.findActive
       })
@@ -85,9 +85,9 @@ class ShopsSpec extends Specification with AsyncActivateTest
 
     "be listed async" inActivate {
       import shopPersistenceContext._
-	  val (s1, s2) = await(asyncTransactionalChain { implicit ctx =>
-        Future.successful((newShop("shop1"), newShop("shop2")))
-      })
+      val (s1, s2) = transactional {
+        (newShop("shop1"), newShop("shop2"))
+      }
       val shops = await(asyncTransactionalChain { implicit ctx =>
         Shop.list()
       })
