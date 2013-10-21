@@ -3,6 +3,16 @@ package models
 import play.api.libs.ws.WS
 import scala.concurrent.Future
 
+import scala.xml._
+import scales.utils._
+import scales.utils.ScalesUtils._
+import scales.xml._
+import scales.xml.ScalesXml._
+import scales.xml.jaxen._
+import scales.utils.resources.SimpleUnboundedPool
+import scales.xml.parser.sax.DefaultSaxSupport
+import play.api.libs.ws.Response
+
 object WebShopTest extends App {
 
 //  val node = HTMLParser.loadURI("http://www.fcsp-shop.com/advanced_search_result.php?keywords=hoody")
@@ -28,16 +38,6 @@ object WebShopTest extends App {
   
 }
 
-import scala.xml._
-
-import scales.utils._
-import scales.utils.ScalesUtils._
-import scales.xml._
-import scales.xml.ScalesXml._
-import scales.xml.jaxen._
-import scales.utils.resources.SimpleUnboundedPool
-import scales.xml.parser.sax.DefaultSaxSupport
-
 trait ScrapingDescription {
   /**
    * The xpath expression to the item/product container
@@ -57,20 +57,20 @@ trait ScrapingDescription {
   val imageUrlBase: Option[String]
 }
 
+trait WebShop extends ScrapingDescription {
+  def search(query: String): Future[Response]
+}
+
 object ProductScraper {
   
-  def search(query: String, sd: ScrapingDescription): Future[Seq[ProductInfo]] = {
+  def search(query: String, shop: WebShop): Future[Seq[ProductInfo]] = {
 
     implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
-    val respFuture = WS.url("http://www.fcsp-shop.com/advanced_search_result.php")
-      .withQueryString("keywords" -> query)
-      .withHeaders("Accept-Language" -> "de,en")
-      .get
-    respFuture.map { resp =>
+    shop.search(query).map { resp =>
       val content = resp.body
       // println("Got response body " + resp.body)
-      ProductScraper.extractProducts(content, sd)
+      ProductScraper.extractProducts(content, shop)
     }
   }
   

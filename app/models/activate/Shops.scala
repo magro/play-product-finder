@@ -8,16 +8,36 @@ import models.Page
 import net.fwbrasil.radon.transaction.TransactionalExecutionContext
 import scala.concurrent.Future
 import models.WebShop
+import play.api.libs.ws.WS
 
-case class ShopScrapingDescription(imageUrlBase: Option[String],
+case class ShopScrapingDescription(queryUrlTemplate: String, imageUrlBase: Option[String],
   itemXPath: ScalesXPath, nameXPath: ScalesXPath, priceXPath: ScalesXPath,
-  imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends WebShop
+  imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends WebShop {
+
+  def search(query: String) = {
+    // "http://www.fcsp-shop.com/advanced_search_result.php?keywords={query}"
+    ShopScrapingDescription.parseQueryUrlTemplate(queryUrlTemplate).map { case (url, queryParam) =>
+      WS.url(url)
+      .withQueryString(queryParam -> query)
+      .withHeaders("Accept-Language" -> "de,en")
+      .get
+    }.getOrElse(throw new IllegalStateException("Unsupported queryUrlTemplate: " + queryUrlTemplate))
+  }
+
+}
 
 object ShopScrapingDescription {
   
+  private val queryUrlPattern = "(.*)\\?(.*)=.*".r
+  private[activate] def parseQueryUrlTemplate(queryUrlTemplate: String): Option[(String, String)] = queryUrlTemplate match {
+    case queryUrlPattern(url, queryParam) => Some((url, queryParam))
+    case _ => None
+  }
+
   def localXPath(xpath: String) = ScalesXPath(xpath).withNameConversion(ScalesXPath.localOnly)
   
   def apply(shop: Shop): ShopScrapingDescription = ShopScrapingDescription(
+      queryUrlTemplate = shop.queryUrlTemplate,
       imageUrlBase = shop.imageUrlBase,
       itemXPath = localXPath(shop.itemXPath), nameXPath = localXPath(shop.nameXPath),
       priceXPath = localXPath(shop.priceXPath), imageUrlXPath = localXPath(shop.imageUrlXPath),

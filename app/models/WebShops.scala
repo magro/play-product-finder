@@ -14,12 +14,17 @@ object FcspShop extends WebShop {
   val imageUrlXPath = localXPath(s".//a/img[@data-original]/@data-original")
   val detailsUrlXPath = localXPath(s".//a[@href]/@href")
 
+  val queryUrlTemplate = "http://www.fcsp-shop.com/advanced_search_result.php?keywords={query}"
   val imageUrlBase = Some("http://www.fcsp-shop.com/")
 
-}
+  def search(query: String) = {
+     play.api.libs.ws.WS.url("http://www.fcsp-shop.com/advanced_search_result.php")
+      .withQueryString("keywords" -> query)
+      .withHeaders("Accept-Language" -> "de,en")
+      .get
+  }
 
-trait WebShop extends ScrapingDescription {
-  
+
 }
 
 object WebShops {
