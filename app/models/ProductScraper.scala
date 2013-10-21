@@ -12,6 +12,9 @@ import scales.utils.resources.SimpleUnboundedPool
 import scales.xml.parser.sax.DefaultSaxSupport
 import play.api.libs.ws.Response
 import models.activate.ShopScrapingDescription
+import java.util.Currency
+import org.joda.money.{CurrencyUnit, Money}
+import org.joda.money.format.MoneyFormatterBuilder
 
 object WebShopTest extends App {
 
@@ -62,6 +65,8 @@ trait WebShop extends ScrapingDescription {
 }
 
 object ProductScraper {
+
+  private val EUR = CurrencyUnit.of("EUR")
   
   def search(query: String, shop: WebShop): Future[Seq[ProductInfo]] = {
 
@@ -98,7 +103,7 @@ object ProductScraper {
             sd.imageUrlBase.map(_ + imgUrl).getOrElse(imgUrl)
           }.getOrElse("")
           val detailsUrl = queryXPath(subtree, sd.detailsUrlXPath).getOrElse("")
-          ProductInfo(name, price, imageUrl, detailsUrl) :: acc
+          ProductInfo(name, Money.of(EUR, price), imageUrl, detailsUrl) :: acc
         }
         case Left(_) => acc
       }
@@ -121,4 +126,11 @@ object ProductScraper {
 
 }
 
-case class ProductInfo(val name: String, val price: Double, val imageUrl: String, val detailsUrl: String)
+object ProductInfo {
+  private val moneyFormatter = new MoneyFormatterBuilder().appendAmountLocalized().appendLiteral(" ").appendCurrencySymbolLocalized().toFormatter()
+}
+
+case class ProductInfo(val name: String, val price: Money, val imageUrl: String, val detailsUrl: String) {
+
+  def priceFormatted(implicit lang: play.api.i18n.Lang) = ProductInfo.moneyFormatter.withLocale(lang.toLocale).print(price)
+}

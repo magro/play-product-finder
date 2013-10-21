@@ -22,7 +22,7 @@ class SeedShopsScrapingSpec extends Specification with ActivateTest with Default
       items.size must be greaterThan(0)
       val item = items(0)
       item.name must contain("Feuerzeug")
-      item.price must be greaterThan(1)
+      item.price.getAmount.doubleValue() must be greaterThan(1)
       item.imageUrl must startWith("http://www.fcsp-shop.com/images/product_images/thumbnail_images/")
       item.detailsUrl must startWith("http://www.fcsp-shop.com/ZUBEHOeR/Essen-Trinken-Rauchen/")
     }
@@ -34,7 +34,7 @@ class SeedShopsScrapingSpec extends Specification with ActivateTest with Default
       items.size must be greaterThan(0)
       val item = items(0)
       item.name must equalTo("""Feuerzeug "Kiezkicker"""")
-      item.price must be greaterThan(1)
+      item.price.getAmount.doubleValue() must be greaterThan(1)
       item.imageUrl must startWith("http://www.kiezkicker-hamburg.de/media/catalog/product/")
       item.detailsUrl must startWith("http://www.kiezkicker-hamburg.de/")
     }

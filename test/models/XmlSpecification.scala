@@ -50,7 +50,7 @@ class XmlSpecification extends Specification with ActivateTest {
       items must haveSize(1)
       val item = items(0)
       item.name must equalTo("Feuerzeug Logo")
-      item.price must equalTo(2.5)
+      item.price.getAmount.doubleValue() must equalTo(2.5)
       item.imageUrl must equalTo("http://www.fcsp-shop.com/images/product_images/thumbnail_images/SP203153_1.jpg")
       item.detailsUrl must equalTo("http://www.fcsp-shop.com/ZUBEHOeR/Essen-Trinken-Rauchen/Feuerzeug-Logo::1224.html?XTCsid=73b360a5a147352dbdc7ef0fa1820db4")
     }
@@ -84,7 +84,7 @@ class XmlSpecification extends Specification with ActivateTest {
       items must haveSize(1)
       val item = items(0)
       item.name must equalTo("""Feuerzeug "Kiezkicker"""")
-      item.price must equalTo(1.5)
+      item.price.getAmount.doubleValue() must equalTo(1.5)
       item.imageUrl must equalTo("http://www.kiezkicker-hamburg.de/media/catalog/product/cache/1/small_image/245x/9df78eab33525d08d6e5fb8d27136e95/f/e/feuer_sw_gr1.jpg")
       item.detailsUrl must equalTo("http://www.kiezkicker-hamburg.de/feuerzeug-kiezkicker?___SID=U")
     }

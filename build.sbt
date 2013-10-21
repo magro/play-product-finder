@@ -19,7 +19,8 @@ libraryDependencies ++= Seq(
   "org.scalesxml" %% "scales-xml" % "0.6.0-M1",
   // and additionally use these for String based XPaths
   "org.scalesxml" %% "scales-jaxen" % "0.6.0-M1" intransitive(), 
-  "jaxen" % "jaxen" % "1.1.3" intransitive()
+  "jaxen" % "jaxen" % "1.1.3" intransitive(),
+  "org.joda" % "joda-money" % "0.9"
 )
 
 playScalaSettings
