@@ -34,7 +34,7 @@ object ShopScrapingDescription {
     case _ => None
   }
 
-  def localXPath(xpath: String) = ScalesXPath(xpath).withNameConversion(ScalesXPath.localOnly)
+  private def localXPath(xpath: String) = ScalesXPath(xpath).withNameConversion(ScalesXPath.localOnly)
   
   def apply(shop: Shop): ShopScrapingDescription = ShopScrapingDescription(
       queryUrlTemplate = shop.queryUrlTemplate,

@@ -24,7 +24,6 @@ object FcspShop extends WebShop {
       .get
   }
 
-
 }
 
 object WebShops {

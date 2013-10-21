@@ -12,6 +12,7 @@ import net.fwbrasil.activate.ActivateContext
 import net.fwbrasil.activate.migration.StorageVersion
 import net.fwbrasil.activate.storage.memory.TransientMemoryStorage
 import net.fwbrasil.activate.storage.relational.PooledJdbcRelationalStorage
+import net.fwbrasil.activate.storage.relational.async.AsyncPostgreSQLStorage
 
 
 trait Strategy {
@@ -42,7 +43,8 @@ object cleanDatabaseStrategy extends Strategy {
 
   def cleanDatabase(implicit ctx: ActivateContext) {
     import ctx._
-    if (storage.isInstanceOf[PooledJdbcRelationalStorage]) {
+    if (storage.isInstanceOf[PooledJdbcRelationalStorage]
+        || storage.isInstanceOf[AsyncPostgreSQLStorage]) {
       transactional {
         // TODO: find a better way to dynamically delete all entities
         import models.activate._

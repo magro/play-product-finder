@@ -17,7 +17,7 @@ class ShopsSpec extends Specification with AsyncActivateTest
   def dateIs(date: java.util.Date, str: String) = new java.text.SimpleDateFormat("yyyy-MM-dd").format(date) == str
 
   // --
-  
+
   override def strategy: Strategy = asyncCleanDatabaseStrategy
   override def context(app: play.api.Application) = shopPersistenceContext
 

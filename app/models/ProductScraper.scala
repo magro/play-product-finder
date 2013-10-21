@@ -2,7 +2,6 @@ package models
 
 import play.api.libs.ws.WS
 import scala.concurrent.Future
-
 import scala.xml._
 import scales.utils._
 import scales.utils.ScalesUtils._
@@ -12,6 +11,7 @@ import scales.xml.jaxen._
 import scales.utils.resources.SimpleUnboundedPool
 import scales.xml.parser.sax.DefaultSaxSupport
 import play.api.libs.ws.Response
+import models.activate.ShopScrapingDescription
 
 object WebShopTest extends App {
 
@@ -79,10 +79,19 @@ object ProductScraper {
     val doc = loadXmlReader(Source.fromString(content), strategy = defaultPathOptimisation, parsers = NuValidatorFactoryPool)
     val root = top(doc)
     
+//    println("Got content " + content)
+//    
+//    sd.itemXPath.evaluate(root).foreach{ item => item match {
+//        case Right(xpath) => println("Got name " + queryXPath(xpath, sd.nameXPath).getOrElse("-"))
+//        case Left(foo) => println("Got foo " + foo)
+//      }
+//    }
+
     val products = sd.itemXPath.evaluate(root).foldLeft(List.empty[ProductInfo]) { (acc, item) =>
       item match {
         case Right(xpath) => {
           val subtree = xpath // top(xpath.tree)
+//          println("** " + queryXPath(xpath, ShopScrapingDescription.localXPath("./a/@title")))
           val name = queryXPath(subtree, sd.nameXPath).getOrElse("-")
           val price: Double = queryXPath(subtree, sd.priceXPath).flatMap(parseDouble).getOrElse(0.0)
           val imageUrl = queryXPath(subtree, sd.imageUrlXPath).map { imgUrl =>
