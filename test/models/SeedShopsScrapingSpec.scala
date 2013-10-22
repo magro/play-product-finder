@@ -38,6 +38,16 @@ class SeedShopsScrapingSpec extends Specification with ActivateTest with Default
       item.imageUrl must startWith("http://www.kiezkicker-hamburg.de/media/catalog/product/")
       item.detailsUrl must startWith("http://www.kiezkicker-hamburg.de/")
     }
+
+    "extract product infos for nixgut" inActivate {
+      val items = await(ProductScraper.search("Baby-Body", SeedShops.nixgut.scrapingDescription))
+      items.size must be greaterThan(0)
+      val item = items(0)
+      item.name must equalTo("""St.Pauli - Totenkopf""")
+      item.price.getAmount.doubleValue() must be greaterThan(1)
+      item.imageUrl must startWith("http://www.nixgut-onlineshop.de/images/product_images/")
+      item.detailsUrl must startWith("http://www.nixgut-onlineshop.de/product_info.php?products_id=")
+    }
   }
 
 }

@@ -18,9 +18,9 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
       browser.goTo("http://localhost:3333/")
 
       browser.$("header h1").first.getText must equalTo("Play sample application — Shopping search buddy")
-      browser.$("section h1").first.getText must equalTo("2 shops found")
+      browser.$("section h1").first.getText must equalTo("3 shops found")
 
-      browser.$("#pagination li.current").first.getText must equalTo("Displaying 1 to 2 of 2")
+      browser.$("#pagination li.current").first.getText must equalTo("Displaying 1 to 3 of 3")
 
 //      browser.$("#pagination li.next a").click()
 //
@@ -28,7 +28,7 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
       browser.$("#searchbox").text("Pauli")
       browser.$("#searchsubmit").click()
 
-      browser.$("section h1").first.getText must equalTo("One shop found")
+      browser.$("section h1").first.getText must equalTo("2 shops found")
       browser.$("a", withText("FC St. Pauli")).click()
 
       browser.$("section h1").first.getText must equalTo("Edit shop")
@@ -42,7 +42,7 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
       browser.$("#url").text("http://example.com")
       browser.$("input.primary").click()
 
-      browser.$("section h1").first.getText must equalTo("2 shops found")
+      browser.$("section h1").first.getText must equalTo("3 shops found")
       browser.$(".alert-message").first.getText must equalTo("Done! Shop FC St. Pauli has been updated")
 
       browser.$("#searchbox").text("Pauli")
@@ -51,13 +51,13 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
       browser.$("a", withText("FC St. Pauli")).click()
       browser.$("input.danger").click()
 
-      browser.$("section h1").first.getText must equalTo("One shop found")
+      browser.$("section h1").first.getText must equalTo("2 shops found")
       browser.$(".alert-message").first.getText must equalTo("Done! Shop has been deleted")
 
       browser.$("#searchbox").text("Pauli")
       browser.$("#searchsubmit").click()
 
-      browser.$("section h1").first.getText must equalTo("No shops found")
+      browser.$("section h1").first.getText must equalTo("One shop found")
 
     }
 

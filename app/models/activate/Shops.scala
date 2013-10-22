@@ -9,6 +9,7 @@ import net.fwbrasil.radon.transaction.TransactionalExecutionContext
 import scala.concurrent.Future
 import models.WebShop
 import play.api.libs.ws.WS
+import scala.collection.immutable.Map
 
 case class ShopScrapingDescription(queryUrlTemplate: String, imageUrlBase: Option[String],
   itemXPath: ScalesXPath, nameXPath: ScalesXPath, priceXPath: ScalesXPath,
@@ -16,9 +17,10 @@ case class ShopScrapingDescription(queryUrlTemplate: String, imageUrlBase: Optio
 
   def search(query: String) = {
     // "http://www.fcsp-shop.com/advanced_search_result.php?keywords={query}"
-    ShopScrapingDescription.parseQueryUrlTemplate(queryUrlTemplate).map { case (url, queryParam) =>
+    ShopScrapingDescription.parseQueryUrlTemplate(queryUrlTemplate).map { case (url, queryParams, searchParam) =>
       WS.url(url)
-      .withQueryString(queryParam -> query)
+      .withQueryString(queryParams:_*)
+      .withQueryString(searchParam -> query)
       .withHeaders("Accept-Language" -> "de,en")
       .get
     }.getOrElse(throw new IllegalStateException("Unsupported queryUrlTemplate: " + queryUrlTemplate))
@@ -28,9 +30,16 @@ case class ShopScrapingDescription(queryUrlTemplate: String, imageUrlBase: Optio
 
 object ShopScrapingDescription {
   
-  private val queryUrlPattern = "(.*)\\?(.*)=.*".r
-  private[activate] def parseQueryUrlTemplate(queryUrlTemplate: String): Option[(String, String)] = queryUrlTemplate match {
-    case queryUrlPattern(url, queryParam) => Some((url, queryParam))
+  private val queryUrlPattern = "(.*)\\?(?:(.*)&)?(.+)=\\{query\\}".r
+  private[activate] def parseQueryUrlTemplate(queryUrlTemplate: String): Option[(String, List[(String, String)], String)] = queryUrlTemplate match {
+    case queryUrlPattern(url, queryParamsString, queryParam) => {
+      val tokens = if(queryParamsString == null) Nil else
+        queryParamsString.split("&").toList.map{ queryParam =>
+          val keyValue = queryParam.split("=")
+          (keyValue(0), keyValue(1))
+        }
+      Some((url, tokens, queryParam))
+    }
     case _ => None
   }
 

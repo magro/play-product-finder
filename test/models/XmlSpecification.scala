@@ -20,7 +20,7 @@ class XmlSpecification extends Specification with ActivateTest {
 
     "extract product infos for fcspShop" inActivate {
 
-      val contentFcSpShop = """
+      val content = """
       <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
         <head/>
         <body>
@@ -46,7 +46,7 @@ class XmlSpecification extends Specification with ActivateTest {
       </html>
       """
 
-      val items = ProductScraper.extractProducts(contentFcSpShop, SeedShops.fcspShop.scrapingDescription)
+      val items = ProductScraper.extractProducts(content, SeedShops.fcspShop.scrapingDescription)
       items must haveSize(1)
       val item = items(0)
       item.name must equalTo("Feuerzeug Logo")
@@ -57,7 +57,7 @@ class XmlSpecification extends Specification with ActivateTest {
 
     "extract name with quotation marks for kiezkicker" inActivate {
 
-      val contentKiezkicker = """
+      val content = """
       <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
         <head/>
         <body>
@@ -80,13 +80,59 @@ class XmlSpecification extends Specification with ActivateTest {
       </html>
       """
 
-      val items = ProductScraper.extractProducts(contentKiezkicker, SeedShops.kiezkicker.scrapingDescription)
+      val items = ProductScraper.extractProducts(content, SeedShops.kiezkicker.scrapingDescription)
       items must haveSize(1)
       val item = items(0)
       item.name must equalTo("""Feuerzeug "Kiezkicker"""")
       item.price.getAmount.doubleValue() must equalTo(1.5)
       item.imageUrl must equalTo("http://www.kiezkicker-hamburg.de/media/catalog/product/cache/1/small_image/245x/9df78eab33525d08d6e5fb8d27136e95/f/e/feuer_sw_gr1.jpg")
       item.detailsUrl must equalTo("http://www.kiezkicker-hamburg.de/feuerzeug-kiezkicker?___SID=U")
+    }
+
+    "extract name with quotation marks for nixGut" inActivate {
+
+      val content = """
+      <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+        <head/>
+        <body>
+          <div class="productListing1ColBody">
+            <div class="floatbox">
+              <div class="productListing1ColBodyImg">
+                <a href="http://www.nixgut-onlineshop.de/product_info.php?products_id=3430">
+                  <img src="images/product_images/thumbnail_images/image_47085_1.jpg" alt="St.Pauli - Totenkopf" class="thumb_img">
+                </a>
+              </div>
+              <div class="productListing1ColBodyTxt">
+                <h1 class="productListing1ColHead">
+                  <a href="http://www.nixgut-onlineshop.de/product_info.php?products_id=3430">St.Pauli - Totenkopf</a>
+                </h1>
+                <div class="productListing1ColDesc">Baby-Body</div>
+                <div class="productListing1ColPriceInfo"> 14,00 EUR<br>
+                  <span class="productListing1ColTaxInfo">inkl. 19 % MwSt. zzgl.
+                    <a target="_blank" href="http://www.nixgut-onlineshop.de/popup_content.php?coID=1&amp;KeepThis=true&amp;TB_iframe=true&amp;height=400&amp;width=600" title="Information" class="thickbox">Versandkosten</a>
+                  </span>
+                </div>
+                <div class="productListing1ColButtons">
+                  <span class="productListing1ColViewButton">
+                    <a href="http://www.nixgut-onlineshop.de/product_info.php?products_id=3430">
+                      <img src="templates/nix-gut/buttons/german/small_view.gif" alt="St.Pauli - Totenkopf">
+                    </a>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </body>
+      </html>
+                    """
+
+      val items = ProductScraper.extractProducts(content, SeedShops.nixgut.scrapingDescription)
+      items must haveSize(1)
+      val item = items(0)
+      item.name must equalTo("""St.Pauli - Totenkopf""")
+      item.price.getAmount.doubleValue() must equalTo(14)
+      item.imageUrl must equalTo("http://www.nixgut-onlineshop.de/images/product_images/thumbnail_images/image_47085_1.jpg")
+      item.detailsUrl must equalTo("http://www.nixgut-onlineshop.de/product_info.php?products_id=3430")
     }
   }
 

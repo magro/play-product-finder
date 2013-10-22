@@ -27,7 +27,7 @@ class ShopsControllerSpec extends Specification with ActivateTest {
       val result = controllers.ShopsController.list(0, 2, "")(FakeRequest())
 
       status(result) must equalTo(OK)
-      contentAsString(result) must contain("2 shops found")
+      contentAsString(result) must contain("3 shops found")
 
     }
     
@@ -36,7 +36,7 @@ class ShopsControllerSpec extends Specification with ActivateTest {
       val result = controllers.ShopsController.list(0, 2, "Pauli")(FakeRequest())
 
       status(result) must equalTo(OK)
-      contentAsString(result) must contain("One shop found")
+      contentAsString(result) must contain("2 shops found")
 
     }
     
