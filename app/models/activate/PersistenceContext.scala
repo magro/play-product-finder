@@ -7,8 +7,9 @@ import net.fwbrasil.activate.storage.relational.PooledJdbcRelationalStorage
 import net.fwbrasil.activate.storage.relational.idiom.postgresqlDialect
 import net.fwbrasil.activate.storage.relational.idiom.h2Dialect
 import net.fwbrasil.activate.storage.relational.async.AsyncPostgreSQLStorage
-import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
 import com.github.mauricio.async.db.Configuration
+import com.github.mauricio.async.db.pool.PoolConfiguration
+import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
 import play.api._
 import com.github.mauricio.async.db.postgresql.util.URLParser
 
@@ -63,6 +64,11 @@ object shopPersistenceContext extends ActivateContext {
         }
       }
     }
+
+    // Override pool configuration to be able to serve more than 20 (10 + 10) concurrent clients
+    // (see PoolConfiguration.Default)
+    // Might use config parameters from application.conf
+    override def poolConfiguration = new PoolConfiguration(200, 20, 500)
 
     lazy val objectFactory = new PostgreSQLConnectionFactory(configuration)
   }
