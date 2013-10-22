@@ -1,7 +1,6 @@
 package controllers
 
 import scala.concurrent.Future
-
 import models._
 import models.activate._
 import models.activate.shopPersistenceContext._
@@ -13,6 +12,8 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
 import views._
+import java.nio.charset.Charset
+import java.nio.charset.UnsupportedCharsetException
 
 object ShopsController extends Controller {
 
@@ -30,12 +31,22 @@ object ShopsController extends Controller {
       _.url -> nonEmptyText,
       _.active -> boolean,
       _.queryUrlTemplate -> nonEmptyText,
+      _.queryUrlEncoding -> optional(nonEmptyText.verifying(isCharset(_))),
       _.imageUrlBase -> optional(nonEmptyText),
       _.itemXPath -> nonEmptyText,
       _.nameXPath -> nonEmptyText,
       _.priceXPath -> nonEmptyText,
       _.imageUrlXPath -> nonEmptyText,
       _.detailsUrlXPath -> nonEmptyText)
+
+  private def isCharset(value: String): Boolean = {
+    try {
+      Charset.forName(value)
+      true
+    } catch {
+      case e: UnsupportedCharsetException => false
+    }
+  }
 
   // -- Actions
 

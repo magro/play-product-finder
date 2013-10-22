@@ -8,6 +8,7 @@ import play.api.test.Helpers._
 import models.activate.SeedShops
 import models.activate.shopPersistenceContext
 import net.fwbrasil.activate.test._
+import java.util.Locale
 
 @RunWith(classOf[JUnitRunner])
 class SeedShopsScrapingSpec extends Specification with ActivateTest with DefaultAwaitTimeout with FutureAwaits {
@@ -25,6 +26,13 @@ class SeedShopsScrapingSpec extends Specification with ActivateTest with Default
       item.price.getAmount.doubleValue() must be greaterThan(1)
       item.imageUrl must startWith("http://www.fcsp-shop.com/images/product_images/thumbnail_images/")
       item.detailsUrl must startWith("http://www.fcsp-shop.com/ZUBEHOeR/Essen-Trinken-Rauchen/")
+    }
+
+    "find products by search with umlaut" inActivate {
+      val items = await(ProductScraper.search("schwarz-grün", SeedShops.fcspShop.scrapingDescription))
+      items.size must be greaterThan(0)
+      val item = items(0)
+      item.name.toLowerCase(Locale.GERMAN) must contain("grün")
     }
 
     "extract product infos for kiezkicker" inActivate {

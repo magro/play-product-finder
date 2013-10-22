@@ -45,6 +45,13 @@ class ShopsControllerSpec extends Specification with ActivateTest {
       val badResult = controllers.ShopsController.save(FakeRequest())
       status(badResult) must equalTo(BAD_REQUEST)
 
+      val badCharset = controllers.ShopsController.save(
+        FakeRequest().withFormUrlEncodedBody("name" -> "FooBar", "queryUrlEncoding" -> "bad")
+      )
+      status(badCharset) must equalTo(BAD_REQUEST)
+      contentAsString(badCharset) must contain("""<input type="text" id="name" name="name" value="FooBar" >""")
+      contentAsString(badCharset) must contain("""<input type="text" id="queryUrlEncoding" name="queryUrlEncoding" value="bad" >""")
+
       val missingFields = controllers.ShopsController.save(
         FakeRequest().withFormUrlEncodedBody("name" -> "FooBar")
       )
@@ -57,6 +64,7 @@ class ShopsControllerSpec extends Specification with ActivateTest {
           "url" -> "url",
           "active" -> "false",
           "queryUrlTemplate" -> "queryUrlTemplate",
+          "queryUrlEncoding" -> "ISO-8859-15",
           "imageUrlBase" -> "imageUrlBase",
           "itemXPath" -> "itemXPath",
           "nameXPath" -> "nameXPath",

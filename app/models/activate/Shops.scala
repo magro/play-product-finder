@@ -10,19 +10,24 @@ import scala.concurrent.Future
 import models.WebShop
 import play.api.libs.ws.WS
 import scala.collection.immutable.Map
+import play.api.Logger
 
-case class ShopScrapingDescription(queryUrlTemplate: String, imageUrlBase: Option[String],
+case class ShopScrapingDescription(queryUrlTemplate: String, queryUrlEncoding: Option[String] = None,
+  imageUrlBase: Option[String] = None,
   itemXPath: ScalesXPath, nameXPath: ScalesXPath, priceXPath: ScalesXPath,
   imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends WebShop {
 
   def search(query: String) = {
     // "http://www.fcsp-shop.com/advanced_search_result.php?keywords={query}"
     ShopScrapingDescription.parseQueryUrlTemplate(queryUrlTemplate).map { case (url, queryParams, searchParam) =>
-      WS.url(url)
-      .withQueryString(queryParams:_*)
-      .withQueryString(searchParam -> query)
-      .withHeaders("Accept-Language" -> "de,en")
-      .get
+      val ws = WS.url(url)
+        .withQueryString(queryParams:_*)
+        .withQueryString(searchParam -> queryUrlEncoding.map(enc => java.net.URLEncoder.encode(query, enc)).getOrElse(query))
+        .withHeaders("Accept-Language" -> "de,en")
+
+      Logger.debug("Requesting " + ws.toString)
+
+      ws.get
     }.getOrElse(throw new IllegalStateException("Unsupported queryUrlTemplate: " + queryUrlTemplate))
   }
 
@@ -47,6 +52,7 @@ object ShopScrapingDescription {
   
   def apply(shop: Shop): ShopScrapingDescription = ShopScrapingDescription(
       queryUrlTemplate = shop.queryUrlTemplate,
+      queryUrlEncoding = shop.queryUrlEncoding,
       imageUrlBase = shop.imageUrlBase,
       itemXPath = localXPath(shop.itemXPath), nameXPath = localXPath(shop.nameXPath),
       priceXPath = localXPath(shop.priceXPath), imageUrlXPath = localXPath(shop.imageUrlXPath),
@@ -58,6 +64,7 @@ class Shop(
   var name: String,
   var url: String,
   var queryUrlTemplate: String,
+  var queryUrlEncoding: Option[String],
   var imageUrlBase: Option[String],
   var active: Boolean = false,
   var itemXPath: String,

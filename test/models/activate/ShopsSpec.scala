@@ -25,7 +25,7 @@ class ShopsSpec extends Specification with AsyncActivateTest
 
   "Shop model" should {
     
-    def newShop(name: String, active: Boolean = false) = new Shop(name, "url", "queryUrlTemplate", None, active, "item", "name", "price", "imageUrl", "detailsUrl")
+    def newShop(name: String, active: Boolean = false) = new Shop(name, "url", "queryUrlTemplate", None, None, active, "item", "name", "price", "imageUrl", "detailsUrl")
 
     "be created and retrieved by id" inActivate {
       import shopPersistenceContext._
