@@ -1,3 +1,6 @@
 # Messages
 
 shops.list.title={0,choice,0#No shops|1#One shop|1<{0,number,integer} shops} found
+
+# Public stuff / product search
+products.search.title=Play! Product Finder

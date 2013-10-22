@@ -8,12 +8,74 @@ body {
   list-style: none;
 }
 
-.thumb {
+ul.products {
+  clear: both;
+  padding: 0;
+  list-style: none;
+}
+
+ul.products > li {
+  display: inline-block;
+  width: 130px;
+  vertical-align: top;
+  margin: 10px;
+/*
+  padding: 4px;
+
+  line-height: 20px;
+  border: 1px solid #ddd;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+
+  -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.055);
+  -moz-box-shadow: 0 1px 3px rgba(0,0,0,0.055);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.055);
+
+  -webkit-transition: all .2s ease-in-out;
+  -moz-transition: all .2s ease-in-out;
+  -o-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+
+*/
+}
+
+/* Extend bootstrap thumbnail, use some stuff that's also set on .thumb (image) */
+ul.products > li > .thumb-wrapper {
   float: left;
-  margin: 0em 1em 0.5em 0.5em;
+  /*margin: 5px 10px 5px 10px;*/
+  margin-bottom: 7px;
+  height: 130px;
+  width: 130px;
+}
+
+a.thumb-wrapper:hover,
+a.thumb-wrapper:focus {
+  border-color: #0088cc;
+  -webkit-box-shadow: 0 1px 5px rgba(0, 105, 214, 0.25);
+     -moz-box-shadow: 0 1px 5px rgba(0, 105, 214, 0.25);
+          box-shadow: 0 1px 5px rgba(0, 105, 214, 0.25);
+}
+
+.thumb {
   /*padding-bottom: 1em;*/
-  height: 100px;
-  width: 100px;
+  height: 130px;
+  width: 130px;
+  
+  /* removes the gray border (for img without src attribute) for chrome */
+  /* but only works if the surrounding a is classified with thumbnail
+  content: "";*/
+  
+  background-size: 100%;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+
+.price {
+  background-color: black;
+  color: white;
+  padding: 1px;
+  font-weight: bold;
 }
 
 .phones li {
@@ -55,29 +117,6 @@ ul.phone-thumbs img {
 
 ul.phone-thumbs img:hover {
   cursor: pointer;
-}
-
-
-ul.specs {
-  clear: both;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-ul.specs > li{
-  display: inline-block;
-  width: 200px;
-  vertical-align: top;
-}
-
-ul.specs > li > span{
-  font-weight: bold;
-  font-size: 1.2em;
-}
-
-ul.specs dt {
-  font-weight: bold;
 }
 
 h1 {
