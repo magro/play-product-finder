@@ -7,9 +7,9 @@
 
       @helper.form(action=routes.ProductsController.search(), 'class -> "form-search") {
         <div class="control-group">
-          <label class="control-label" for="query">Search</label>
+          <label class="control-label" for="searchbox">Search</label>
           <div class="controls">
-            <input type="search" id="query" name="query" value="@query" />
+            <input autocomplete="off" type="search" id="searchbox" name="query" value="@query" />
           </div>
         </div>
         <div class="control-group">
@@ -27,22 +27,9 @@
       }
 
     </div>
-    <div class="span9">
-      <!--Body content-->
 
-      <ul class="products">
-        @for(product <- products) {
-          <li class="product thumbnail">
-            <a class="thumb-wrapper" href="@product.detailsUrl">
-              <img class="thumb" style="background-image: url(@product.imageUrl)" />
-            </a>
-            <a href="@product.detailsUrl">@product.name</a>
-            <p><small class="price">@product.priceFormatted</small></p>
-          </li>
-        }
-      </ul>
+    @productListComponent(products)
 
-    </div>
   </div>
 </div>
 }

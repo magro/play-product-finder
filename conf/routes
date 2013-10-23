@@ -4,9 +4,12 @@
 
 # Default path will just redirect to the shop list
 
-GET		/							controllers.ShopsController.index()
-
 GET		/search						controllers.ProductsController.search(query ?= "")
+GET		/liveSearch					controllers.ProductsController.liveSearch(query ?= "")
+
+GET		/jsRoutes					controllers.ProductsController.jsRoutes
+
+GET		/							controllers.ShopsController.index()
 
 GET		/shops						controllers.ShopsController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
 

@@ -25,6 +25,10 @@ libraryDependencies ++= Seq(
 
 playScalaSettings
 
+requireJs += "main.js"
+
+requireNativePath := Some("/usr/local/lib/node_modules/requirejs/bin/r.js")
+
 // From activate-example-play-async
 // Keys.fork in Test := false
 
