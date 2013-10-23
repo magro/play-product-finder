@@ -65,6 +65,7 @@ class ShopsControllerSpec extends Specification with ActivateTest {
           "active" -> "false",
           "queryUrlTemplate" -> "queryUrlTemplate",
           "queryUrlEncoding" -> "ISO-8859-15",
+          "responseEncoding" -> "",
           "imageUrlBase" -> "imageUrlBase",
           "itemXPath" -> "itemXPath",
           "nameXPath" -> "nameXPath",

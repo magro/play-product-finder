@@ -62,6 +62,7 @@ trait ScrapingDescription {
 
 trait WebShop extends ScrapingDescription {
   def search(query: String): Future[Response]
+  val responseEncoding: Option[String] = None
 }
 
 object ProductScraper {
@@ -73,12 +74,16 @@ object ProductScraper {
     implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
     shop.search(query).map { resp =>
-      val content = resp.body
+      val content = bodyWithShopEncoding(resp, shop)
       // println("Got response body " + resp.body)
       ProductScraper.extractProducts(content, shop)
     }
   }
-  
+
+  private def bodyWithShopEncoding(resp: Response, shop: WebShop): String = {
+    shop.responseEncoding.map(charset => resp.ahcResponse.getResponseBody(charset)).getOrElse(resp.body)
+  }
+
   def extractProducts(content: String, sd: ScrapingDescription): List[models.ProductInfo] = {
     
     val doc = loadXmlReader(Source.fromString(content), strategy = defaultPathOptimisation, parsers = NuValidatorFactoryPool)

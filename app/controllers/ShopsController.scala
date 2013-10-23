@@ -32,6 +32,7 @@ object ShopsController extends Controller {
       _.active -> boolean,
       _.queryUrlTemplate -> nonEmptyText,
       _.queryUrlEncoding -> optional(nonEmptyText.verifying(isCharset(_))),
+      _.responseEncoding -> optional(nonEmptyText.verifying(isCharset(_))),
       _.imageUrlBase -> optional(nonEmptyText),
       _.itemXPath -> nonEmptyText,
       _.nameXPath -> nonEmptyText,

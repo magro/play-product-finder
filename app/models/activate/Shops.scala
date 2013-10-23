@@ -13,7 +13,7 @@ import scala.collection.immutable.Map
 import play.api.Logger
 
 case class ShopScrapingDescription(queryUrlTemplate: String, queryUrlEncoding: Option[String] = None,
-  imageUrlBase: Option[String] = None,
+  override val responseEncoding: Option[String] = None, imageUrlBase: Option[String] = None,
   itemXPath: ScalesXPath, nameXPath: ScalesXPath, priceXPath: ScalesXPath,
   imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends WebShop {
 
@@ -53,6 +53,7 @@ object ShopScrapingDescription {
   def apply(shop: Shop): ShopScrapingDescription = ShopScrapingDescription(
       queryUrlTemplate = shop.queryUrlTemplate,
       queryUrlEncoding = shop.queryUrlEncoding,
+      responseEncoding = shop.responseEncoding,
       imageUrlBase = shop.imageUrlBase,
       itemXPath = localXPath(shop.itemXPath), nameXPath = localXPath(shop.nameXPath),
       priceXPath = localXPath(shop.priceXPath), imageUrlXPath = localXPath(shop.imageUrlXPath),
@@ -65,6 +66,7 @@ class Shop(
   var url: String,
   var queryUrlTemplate: String,
   var queryUrlEncoding: Option[String],
+  var responseEncoding: Option[String],
   var imageUrlBase: Option[String],
   var active: Boolean = false,
   var itemXPath: String,

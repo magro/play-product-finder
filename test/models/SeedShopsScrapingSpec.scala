@@ -13,7 +13,7 @@ import java.util.Locale
 @RunWith(classOf[JUnitRunner])
 class SeedShopsScrapingSpec extends Specification with ActivateTest with DefaultAwaitTimeout with FutureAwaits {
 
-  override def strategy: Strategy = cleanDatabaseStrategy
+  override def strategy: Strategy = recreateDatabaseStrategy
   override def context(app: play.api.Application) = shopPersistenceContext
 
   "ProductScraper" should {
@@ -45,6 +45,13 @@ class SeedShopsScrapingSpec extends Specification with ActivateTest with Default
       item.price.getAmount.doubleValue() must be greaterThan(1)
       item.imageUrl must startWith("http://www.kiezkicker-hamburg.de/media/catalog/product/")
       item.detailsUrl must startWith("http://www.kiezkicker-hamburg.de/")
+    }
+
+    "extract product infos with umlauts for kiezkicker" inActivate {
+      val items = await(ProductScraper.search("blattgrün", SeedShops.kiezkicker.scrapingDescription))
+      items.size must be greaterThan(0)
+      val item = items(0)
+      item.name must contain("blattgrün")
     }
 
     "extract product infos for nixgut" inActivate {
