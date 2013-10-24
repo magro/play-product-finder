@@ -12,7 +12,7 @@ import play.api.libs.ws.WS
 import scala.collection.immutable.Map
 import play.api.Logger
 
-case class ShopScrapingDescription(queryUrlTemplate: String, queryUrlEncoding: Option[String] = None,
+case class ShopScrapingDescription(shortName: String, queryUrlTemplate: String, queryUrlEncoding: Option[String] = None,
   override val responseEncoding: Option[String] = None, imageUrlBase: Option[String] = None,
   itemXPath: ScalesXPath, nameXPath: ScalesXPath, priceXPath: ScalesXPath,
   imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends WebShop {
@@ -51,6 +51,7 @@ object ShopScrapingDescription {
   private def localXPath(xpath: String) = ScalesXPath(xpath).withNameConversion(ScalesXPath.localOnly)
   
   def apply(shop: Shop): ShopScrapingDescription = ShopScrapingDescription(
+      shortName = shop.shortName.getOrElse(shop.name),
       queryUrlTemplate = shop.queryUrlTemplate,
       queryUrlEncoding = shop.queryUrlEncoding,
       responseEncoding = shop.responseEncoding,
@@ -63,6 +64,7 @@ object ShopScrapingDescription {
 @Alias("shop")
 class Shop(
   var name: String,
+  var shortName: Option[String],
   var url: String,
   var queryUrlTemplate: String,
   var queryUrlEncoding: Option[String],

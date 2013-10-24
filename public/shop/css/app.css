@@ -90,6 +90,11 @@ a.thumb-wrapper:focus {
   font-weight: bold;
 }
 
+.product-footer {
+  margin-top: -10px;
+  font-size: 75%;
+}
+
 .phones li {
   clear: both;
   height: 100px;

@@ -9,7 +9,7 @@ import net.fwbrasil.activate.migration.IfExists
 
 class CreateSchema extends Migration {
 
-  override def timestamp = 201310230134L
+  override def timestamp = 201310242141L
 
   override def up = {
     table[Shop].removeTable.ifExists
@@ -23,7 +23,7 @@ class CreateSchema extends Migration {
 
 object SeedShops {
 
-  def fcspShop = new Shop("FC St. Pauli", "http://www.fcsp-shop.com/",
+  def fcspShop = new Shop("FC St. Pauli", Some("fcsp-shop"), "http://www.fcsp-shop.com/",
           "http://www.fcsp-shop.com/advanced_search_result.php?keywords={query}",
           Some("ISO-8859-15"),
           None,
@@ -34,7 +34,7 @@ object SeedShops {
           ".//a/img[@data-original]/@data-original",
           ".//a[@href]/@href")
 
-  def kiezkicker = new Shop("Kiezkicker Hamburg", "http://www.kiezkicker-hamburg.de/",
+  def kiezkicker = new Shop("Kiezkicker Hamburg", Some("kiezkicker"), "http://www.kiezkicker-hamburg.de/",
           "http://www.kiezkicker-hamburg.de/catalogsearch/result/?q={query}",
           None,
           Some("UTF-8"),
@@ -50,7 +50,7 @@ object SeedShops {
           ".//a[@class='product-image']/img/@src",
           ".//a[@class='product-image']/@href")
 
-  def nixgut = new Shop("Nix Gut Mailorder / Alles von St. Pauli", "http://www.nixgut-onlineshop.de/index.php?cPath=13_43",
+  def nixgut = new Shop("Nix Gut Mailorder / Alles von St. Pauli", Some("nixgut"), "http://www.nixgut-onlineshop.de/index.php?cPath=13_43",
     "http://www.nixgut-onlineshop.de/advanced_search_result.php?categories_id=43&inc_subcat=1&keywords={query}",
     Some("ISO-8859-15"),
     None,
@@ -65,7 +65,7 @@ object SeedShops {
 
 class SeedData extends Migration {
 
-  override def timestamp = 201310230135L
+  override def timestamp = 201310242142L
 
   override def down = {
     customScript {

@@ -63,6 +63,7 @@ trait ScrapingDescription {
 trait WebShop extends ScrapingDescription {
   def search(query: String): Future[Response]
   val responseEncoding: Option[String] = None
+  val shortName: String
 }
 
 object ProductScraper {
@@ -84,7 +85,7 @@ object ProductScraper {
     shop.responseEncoding.map(charset => resp.ahcResponse.getResponseBody(charset)).getOrElse(resp.body)
   }
 
-  def extractProducts(content: String, sd: ScrapingDescription): List[models.ProductInfo] = {
+  def extractProducts(content: String, shop: WebShop): List[models.ProductInfo] = {
     
     val doc = loadXmlReader(Source.fromString(content), strategy = defaultPathOptimisation, parsers = NuValidatorFactoryPool)
     val root = top(doc)
@@ -97,18 +98,18 @@ object ProductScraper {
 //      }
 //    }
 
-    val products = sd.itemXPath.evaluate(root).foldLeft(List.empty[ProductInfo]) { (acc, item) =>
+    val products = shop.itemXPath.evaluate(root).foldLeft(List.empty[ProductInfo]) { (acc, item) =>
       item match {
         case Right(xpath) => {
           val subtree = xpath // top(xpath.tree)
 //          println("** " + queryXPath(xpath, ShopScrapingDescription.localXPath("./a/@title")))
-          val name = queryXPath(subtree, sd.nameXPath).getOrElse("-")
-          val price: Double = queryXPath(subtree, sd.priceXPath).flatMap(parseDouble).getOrElse(0.0)
-          val imageUrl = queryXPath(subtree, sd.imageUrlXPath).map { imgUrl =>
-            sd.imageUrlBase.map(_ + imgUrl).getOrElse(imgUrl)
+          val name = queryXPath(subtree, shop.nameXPath).getOrElse("-")
+          val price: Double = queryXPath(subtree, shop.priceXPath).flatMap(parseDouble).getOrElse(0.0)
+          val imageUrl = queryXPath(subtree, shop.imageUrlXPath).map { imgUrl =>
+            shop.imageUrlBase.map(_ + imgUrl).getOrElse(imgUrl)
           }.getOrElse("")
-          val detailsUrl = queryXPath(subtree, sd.detailsUrlXPath).getOrElse("")
-          ProductInfo(name, Money.of(EUR, price), imageUrl, detailsUrl) :: acc
+          val detailsUrl = queryXPath(subtree, shop.detailsUrlXPath).getOrElse("")
+          ProductInfo(name, Money.of(EUR, price), imageUrl, detailsUrl, shop.shortName) :: acc
         }
         case Left(_) => acc
       }
@@ -135,7 +136,7 @@ object ProductInfo {
   private val moneyFormatter = new MoneyFormatterBuilder().appendAmountLocalized().appendLiteral(" ").appendCurrencySymbolLocalized().toFormatter()
 }
 
-case class ProductInfo(val name: String, val price: Money, val imageUrl: String, val detailsUrl: String) {
+case class ProductInfo(val name: String, val price: Money, val imageUrl: String, val detailsUrl: String, val shopName: String) {
 
   def priceFormatted(implicit lang: play.api.i18n.Lang) = ProductInfo.moneyFormatter.withLocale(lang.toLocale).print(price)
 }

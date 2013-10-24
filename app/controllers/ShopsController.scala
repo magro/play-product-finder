@@ -28,6 +28,7 @@ object ShopsController extends Controller {
   val shopForm =
     EntityForm[Shop](
       _.name -> nonEmptyText,
+      _.shortName -> optional(nonEmptyText),
       _.url -> nonEmptyText,
       _.active -> boolean,
       _.queryUrlTemplate -> nonEmptyText,
