@@ -1,7 +1,15 @@
-@(products: Seq[ProductInfo])
-<div id="content" class="span9">
+@(products: Seq[ProductInfo], query: String)
+<div id="content" class="span9 overlay-wrapper">
+
+  <div id="overlay">
+    <div id="loading-indicator">
+      <img id="loading-image" src="@routes.Assets.at("shop/img/ajax-loader.gif")" />
+      <div id="loading-message">Searching @query</div>
+    </div>
+  </div>
+
   <!--Body content-->
-  <ul class="products">
+  <ul class="products loading-wrapper">
     @for(product <- products) {
       <li class="product thumbnail">
         <a class="thumb-wrapper" href="@product.detailsUrl">

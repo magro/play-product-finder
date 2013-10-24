@@ -134,3 +134,70 @@ ul.phone-thumbs img:hover {
 h1 {
   border-bottom: 1px solid gray;
 }
+
+
+/* ------------- loading animation --------------*/
+
+.overlay-wrapper {
+  position: relative;
+}
+
+#overlay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -moz-box-justify-content: center;
+  -ms-flex-justify-content: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -moz-box-align-items: center;
+  -ms-flex-align-items: center;
+  -webkit-align-items: center;
+  align-items: center;
+}
+
+#loading-indicator {
+  position: absolute;
+  top: 200px;
+}
+
+#loading-image {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#loading-message {
+  font-size:110%;
+  font-weight: bold;
+}
+
+.typing-animation {
+    overflow:hidden;
+  -webkit-animation: typing 5s steps(50, end);
+     -moz-animation: typing 5s steps(50, end);
+          animation: typing 5s steps(50, end);
+}
+/* let's animate, it's super easy */
+@keyframes typing {
+	from{ width: 0;}
+    to { width:100% }
+}
+
+@-webkit-keyframes typing {
+    from { width: 0 }
+    to { width:100% }
+}
+
+@-moz-keyframes typing {
+    from { width: 0 }
+    to { width:100% }
+}

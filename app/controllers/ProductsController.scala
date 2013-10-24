@@ -25,7 +25,7 @@ object ProductsController extends Controller {
     searchProducts(query).map(products => {
       val htmlBySelector = Map(
         "#homeTitle.text" -> Messages("products.content.title", products.size),
-        "#content" -> views.html.productListComponent.render(products).body)
+        "#content" -> views.html.productListComponent.render(products, query).body)
       val json = Json.obj(
         "success" -> true,
         "query" -> query,

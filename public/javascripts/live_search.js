@@ -60,6 +60,7 @@ window.myApp.AjaxInput = (function() {
             liveSearch(null, true);
         }
     });
+    $("#overlay").hide();
 
     var liveSearch = function liveSearch(event, isPopstate) {
         var q = $("#searchbox").val();
@@ -75,6 +76,8 @@ window.myApp.AjaxInput = (function() {
         // var sortBy = $(".computers").attr("data-sort-by");
         // var sortOrder = $(".computers").attr("data-sort-order");
         lastQuery = q;
+        $("#loading-message").text("Searching " + q);
+        $("#overlay").fadeIn(100);
         jsRoutes.controllers.ProductsController.liveSearch(q).ajax({
             success : function(data, textStatus, jqXHR) {
                 // If there was another query started we don't take any action
@@ -88,6 +91,7 @@ window.myApp.AjaxInput = (function() {
                 setWindowTitleForQuery(q);
                 // $(document).off('keyup', '#searchbox');
                 window.ajaxUtils.updateHtmlBySelector(data);
+                $("#overlay").fadeOut(500);
                 // $(document).on('keyup', '#searchbox', debounce(liveSearch, 300, false));
             },
             dataType : "json"
