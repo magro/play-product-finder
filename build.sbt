@@ -1,4 +1,5 @@
 import play.Project._
+import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
 
 name := "play-webshop"
 
@@ -28,6 +29,10 @@ playScalaSettings
 requireJs += "main.js"
 
 requireNativePath := Some("/usr/local/lib/node_modules/requirejs/bin/r.js")
+
+EclipseKeys.preTasks := Seq() // don't run compile before eclipse
+
+EclipseKeys.withSource := true
 
 // From activate-example-play-async
 // Keys.fork in Test := false
