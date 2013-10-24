@@ -47,7 +47,6 @@ window.myApp.AjaxInput = (function() {
             ? title + " (" + q + ")"
             : title.substring(0, idx) + "(" + q + ")";
     };
-    setWindowTitleForQuery(queryFromUrl());
     
     var lastQuery = null;
     
@@ -60,7 +59,6 @@ window.myApp.AjaxInput = (function() {
             liveSearch(null, true);
         }
     });
-    $("#overlay").hide();
 
     var liveSearch = function liveSearch(event, isPopstate) {
         var q = $("#searchbox").val();
@@ -150,7 +148,15 @@ window.myApp.AjaxInput = (function() {
     };
     
     var init = function init() {
+        $("#overlay").hide();
         $("#searchbox").keyup(debounce(liveSearch, 300, false));
+        setWindowTitleForQuery(queryFromUrl());
+        // Change the url instead of submitting the form, because the form submit
+        // would encode spaces as "+" which would not be decoded as space by decodeURIComponent
+        $("#searchsubmit").click(function() {
+            location.search = "query=" + encodeURIComponent($('#searchbox').val());
+            return false;
+        });
     };
 
     return {
