@@ -1,9 +1,9 @@
-@(content: Html)
+@(title: String)(content: Html)(implicit request: Request[_])
 
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Computers database</title>
+        <title>Play! Product Finder / Admin / @title</title>
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")"> 
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/main.css")"> 
     </head>
@@ -15,6 +15,14 @@
                     Play sample application &mdash; Shopping search buddy
                 </a>
             </h1>
+            @** Hack into request type, so that we can use the same template for both login and authenticated views **@
+            @if(request.isInstanceOf[Security.AuthenticatedRequest[_, _]]) {
+                @defining(request.asInstanceOf[Security.AuthenticatedRequest[_, String]]) { authRequest =>
+		            <dl id="user">
+		                <dd>@authRequest.user (<a id="logout" href="@routes.ShopsController.logout()">Logout</a>)</dd>
+		            </dl>
+                }
+            }
         </header>
         
         <section id="main">

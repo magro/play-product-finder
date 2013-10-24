@@ -1,10 +1,10 @@
-@(shopForm: Form[net.fwbrasil.activate.play.EntityData[activate.Shop]])
+@(shopForm: Form[net.fwbrasil.activate.play.EntityData[activate.Shop]])(implicit request: Request[_])
 
 @import helper._
 
 @implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) } 
 
-@main {
+@main("Shop-Mgmt / Create") {
     
     <h1>Add a shop</h1>
     

@@ -9,6 +9,14 @@ header h1 {
     font-size: 24px;
 }
 
+header #user {
+    color: #bfbfbf;
+    float: right;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
 section#main {
     position: relative;
     padding: 5em 2em;

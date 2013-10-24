@@ -15,17 +15,17 @@ import views._
 import java.nio.charset.Charset
 import java.nio.charset.UnsupportedCharsetException
 
-object ShopsController extends Controller {
+object ShopsController extends Controller with ShopsSecurity {
 
   /**
    * This result directly redirect to the application home.
    */
-  val Home = Redirect(routes.ShopsController.list(0, 2, ""))
+  private val Home = Redirect(routes.ShopsController.list(0, 2, ""))
 
   /**
    * Describe the shop form (used in both edit and create screens).
    */
-  val shopForm =
+  private val shopForm =
     EntityForm[Shop](
       _.name -> nonEmptyText,
       _.shortName -> optional(nonEmptyText),
@@ -64,7 +64,7 @@ object ShopsController extends Controller {
    * @param orderBy Column to be sorted
    * @param filter Filter applied on shop names
    */
-  def list(page: Int, orderBy: Int, filter: String) = Action.async { implicit request =>
+  def list(page: Int, orderBy: Int, filter: String) = Authenticated.async { implicit request =>
     asyncTransactionalChain { implicit ctx =>
       Shop.list(page = page, orderBy = orderBy, filter = ("*" + filter + "*")).map {
         page => Ok(html.shopList(page, orderBy, filter))
@@ -75,7 +75,7 @@ object ShopsController extends Controller {
   /**
    * Display the 'new shop form'.
    */
-  def create = Action.async {
+  def create = Authenticated.async { implicit request =>
     asyncTransactionalChain { implicit ctx =>
       Future.successful(Ok(html.createForm(shopForm)))
     }
@@ -84,7 +84,7 @@ object ShopsController extends Controller {
   /**
    * Handle the 'new shop form' submission.
    */
-  def save = Action.async { implicit request =>
+  def save = Authenticated.async { implicit request =>
     asyncTransactionalChain { implicit ctx =>
       shopForm.bindFromRequest.fold(
         formWithErrors =>
@@ -102,7 +102,7 @@ object ShopsController extends Controller {
    *
    * @param id Id of the shop to edit
    */
-  def edit(id: String) = Action.async {
+  def edit(id: String) = Authenticated.async { implicit request =>
     asyncTransactionalChain { implicit ctx =>
       asyncById[Shop](id).map { shopOption =>
         shopOption.map { shop =>
@@ -117,7 +117,7 @@ object ShopsController extends Controller {
    *
    * @param id Id of the shop to edit
    */
-  def update(id: String) = Action.async { implicit request =>
+  def update(id: String) = Authenticated.async { implicit request =>
     asyncTransactionalChain { implicit ctx =>
       shopForm.bindFromRequest.fold(
         formWithErrors =>
@@ -135,7 +135,7 @@ object ShopsController extends Controller {
    *
    * @param id Id of the shop to delete
    */
-  def delete(id: String) = Action.async {
+  def delete(id: String) = Authenticated.async {
     asyncTransactionalChain { implicit ctx =>
       asyncById[Shop](id).map { shopOption =>
         shopOption.map { shop =>

@@ -1,3 +1,5 @@
+package controllers
+
 import org.specs2.mutable._
 import play.api.test._
 import play.api.test.Helpers._
@@ -16,6 +18,16 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
     "work from within a browser" inBrowserWithActivate { browser =>
 
       browser.goTo("http://localhost:3333/")
+
+      // Login
+      browser.url() must endWith(routes.ShopsController.login.url)
+      browser.$("#username").text(ShopsSecurity.ValidUsername)
+      browser.$("#password").text(ShopsSecurity.ValidPassword)
+      browser.$("input.primary").click()
+
+      browser.url() must endWith(routes.ShopsController.list().url)
+      browser.$("#user").first.getText must contain(ShopsSecurity.ValidUsername)
+
 
       browser.$("header h1").first.getText must equalTo("Play sample application — Shopping search buddy")
       browser.$("section h1").first.getText must equalTo("3 shops found")
@@ -58,6 +70,10 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
       browser.$("#searchsubmit").click()
 
       browser.$("section h1").first.getText must equalTo("One shop found")
+
+      // Logout
+      browser.$("#logout").click()
+      browser.url() must endWith(routes.ShopsController.login.url)
 
     }
 

@@ -1,0 +1,44 @@
+@(loginForm: Form[(String, String)])(implicit flash: Flash, request: Request[_])
+
+@import helper._
+@import helper.twitterBootstrap._
+
+@main("Login") {
+        
+    @helper.form(routes.ShopsController.authenticate) {
+        
+        <h1>Sign in</h1>
+        
+        @if(loginForm.hasGlobalErrors) {
+            <ul class="alert-message error">
+            @loginForm.globalErrors.foreach { error =>
+                <li>@error.message</li>
+            }
+            </ul>
+        }
+        
+        @flash.get("success").map { msg =>
+            <div class="alert-message success">
+                @msg
+            </div>
+        }
+        
+        <fieldset>
+            @inputText(loginForm("username"), '_label -> "Email")
+            @inputPassword(loginForm("password"), '_label -> "Password")
+        </fieldset>
+        
+        <div class="actions">
+            <input type="submit" value="Login" class="btn primary"> or 
+            <a href="@routes.ShopsController.list()" class="btn">Cancel</a> 
+        </div>
+        
+    }
+    
+    <p class="note">
+        Try <em>play@@example.com</em> with <em>secret</em> as password.
+    </p>
+
+}
+
+

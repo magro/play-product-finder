@@ -1,4 +1,4 @@
-@(currentPage: Page[activate.Shop], currentOrderBy: Int, currentFilter: String)(implicit flash: play.api.mvc.Flash)
+@(currentPage: Page[activate.Shop], currentOrderBy: Int, currentFilter: String)(implicit flash: play.api.mvc.Flash, request: Request[_])
 
 @****************************************
 * Helper generating navigation links    *
@@ -19,7 +19,7 @@
     </th>
 }
 
-@main {
+@main("Shop-Mgmt / List") {
     
     <h1>@Messages("shops.list.title", currentPage.total)</h1>
 
