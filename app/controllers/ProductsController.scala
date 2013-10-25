@@ -11,6 +11,7 @@ import views._
 import models._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
+import org.apache.commons.lang3.StringUtils
 
 object ProductsController extends Controller {
 
@@ -44,7 +45,7 @@ object ProductsController extends Controller {
     val futureProducts = for {
       shops <- WebShops.findActive
       products <- Future.sequence(shops.map(ProductScraper.search(query, _)))
-    } yield products.flatten
+    } yield products.flatten.filter(p => !StringUtils.isEmpty(p.imageUrl))
     futureProducts
   }
 
