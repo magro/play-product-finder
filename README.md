@@ -7,6 +7,9 @@ This is a Play! Framework 2 sample project that shows reactive (non-blocking) da
 
 This is a classic CRUD application, backed by a JDBC database. It demonstrates:
 
+* Using Activate (Async) Persistence
+** How to use different datases for test/dev
+
 - Accessing a JDBC database, using Anorm.
 - Achieving, table pagination and CRUD forms.
 - Integrating with a CSS framework (Twitter Bootstrap ).

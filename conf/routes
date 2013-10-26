@@ -2,10 +2,10 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Default path will just redirect to the shop list
-
-GET		/search						controllers.ProductsController.search(query ?= "")
-GET		/liveSearch					controllers.ProductsController.liveSearch(query ?= "")
+# The sortBy default value is ignored, but we want to use the reverse route in the productList form action...
+# (For the ignored default value see also https://groups.google.com/d/msg/play-framework/yTMcSaZbSko/Or5lbiDFRvkJ) 
+GET		/search						controllers.ProductsController.search(query ?= "", sortBy: controllers.ProductsSorting ?= controllers.SortByIndex)
+GET		/liveSearch					controllers.ProductsController.liveSearch(query ?= "", sortBy: controllers.ProductsSorting ?= controllers.SortByIndex)
 
 GET		/jsRoutes					controllers.ProductsController.jsRoutes
 
@@ -13,6 +13,7 @@ GET		/login						controllers.ShopsController.login
 POST	/login						controllers.ShopsController.authenticate
 GET		/logout						controllers.ShopsController.logout
 
+# Default path will just redirect to the shop list
 GET		/							controllers.ShopsController.index()
 
 GET		/shops						controllers.ShopsController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")

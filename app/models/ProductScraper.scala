@@ -67,10 +67,8 @@ trait WebShop extends ScrapingDescription {
 }
 
 object ProductScraper {
-
-  private val EUR = CurrencyUnit.of("EUR")
   
-  def search(query: String, shop: WebShop): Future[Seq[ProductInfo]] = {
+  def search(query: String, shop: WebShop): Future[List[ProductInfo]] = {
 
     implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
@@ -109,7 +107,7 @@ object ProductScraper {
             shop.imageUrlBase.map(_ + imgUrl).getOrElse(imgUrl)
           }.getOrElse("")
           val detailsUrl = queryXPath(subtree, shop.detailsUrlXPath).getOrElse("")
-          ProductInfo(name, Money.of(EUR, price), imageUrl, detailsUrl, shop.shortName) :: acc
+          ProductInfo(name, Money.of(CurrencyUnit.EUR, price), imageUrl, detailsUrl, shop.shortName) :: acc
         }
         case Left(_) => acc
       }

@@ -12,18 +12,23 @@ import models._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import scala.concurrent.Future
 import org.apache.commons.lang3.StringUtils
+import scala.math.Numeric
+import scala.math.Ordering
+import scala.collection.immutable.ListMap
+import scala.collection.immutable.TreeMap
+import scala.collection.Iterable
 
 object ProductsController extends Controller {
 
   /**
    * Search in all active shops with the given query and display found products.
    */
-  def search(query: String) = Action.async { implicit request =>
-    searchProducts(query).map(products => Ok(html.productList(products, "orderBy", query)))
+  def search(query: String, sortBy: ProductsSorting = SortByIndex) = Action.async { implicit request =>
+    searchProducts(query, sortBy).map(products => Ok(html.productList(products, ProductsSorting.options, query, sortBy)))
   }
 
-  def liveSearch(query: String) = Action.async { implicit request =>
-    searchProducts(query).map(products => {
+  def liveSearch(query: String, sortBy: ProductsSorting = SortByIndex) = Action.async { implicit request =>
+    searchProducts(query, sortBy).map(products => {
       val htmlBySelector = Map(
         "#homeTitle.text" -> Messages("products.content.title", products.size),
         "#content" -> views.html.productListComponent.render(products, query).body)
@@ -41,12 +46,14 @@ object ProductsController extends Controller {
       routes.javascript.ProductsController.liveSearch)).as("text/javascript")
   }
 
-  private def searchProducts(query: String): Future[Seq[models.ProductInfo]] = {
-    val futureProducts = for {
+  private def searchProducts(query: String, sortBy: ProductsSorting): Future[Iterable[models.ProductInfo]] = {
+    for {
       shops <- WebShops.findActive
-      products <- Future.sequence(shops.map(ProductScraper.search(query, _)))
-    } yield products.flatten.filter(p => !StringUtils.isEmpty(p.imageUrl))
-    futureProducts
+      products <- Future.sequence(
+        shops.map(
+          ProductScraper.search(query, _)
+            .map(_.filter(p => !StringUtils.isEmpty(p.imageUrl)))))
+    } yield sortBy.sort(products)
   }
 
 }

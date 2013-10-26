@@ -4,3 +4,8 @@ shops.list.title={0,choice,0#No shops|1#One shop|1<{0,number,integer} shops} fou
 
 # Public stuff / product search
 products.search.title=Play! Product Finder
+
+products.search.sorting.index=Mixed
+products.search.sorting.shop=Shop
+products.search.sorting.priceAsc=Price Up
+products.search.sorting.priceDesc=Price Down

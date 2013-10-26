@@ -1,4 +1,4 @@
-@(products: Seq[ProductInfo], orderBy: String, query: String)(implicit lang: play.api.i18n.Lang)
+@(products: Iterable[ProductInfo], sortOptions: Seq[(String, String)], query: String, sortBy: ProductsSorting)(implicit lang: play.api.i18n.Lang)
 @productMain {
 <div class="container-fluid">
   <div class="row-fluid">
@@ -15,9 +15,10 @@
         <div class="control-group">
           <label class="control-label" for="orderBy">Sort by</label>
           <div class="controls">
-            <select id="orderBy">
-              <option value="name">Alphabetical</option>
-              <option value="age">Newest</option>
+            <select id="sortBy">
+              @for(option <- sortOptions) {
+                <option value="@option._1" @if(option._1 == sortBy.id){ selected }>@option._2</option>
+              }
             </select>
           </div>
         </div>

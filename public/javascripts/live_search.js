@@ -2,21 +2,23 @@ window.myApp = window.myApp || {};
 
 window.myApp.AjaxInput = (function() {
     "use strict";
-    
-    var queryFromUrl = function() {
-        var loc = window.location.href;
-        var idx = loc.indexOf("query=");
-        if(idx > -1) {
-            return decodeURIComponent(loc.substring(idx + "query=".length));
-        }
-        return null;
+
+    var queryStringToObject = function() {
+        var pairs = location.search.slice(1).split('&');
+        var result = {};
+        pairs.forEach(function(pair) {
+            pair = pair.split('=');
+            result[pair[0]] = decodeURIComponent(pair[1] || '');
+        });
+        return result;
     };
     
-    var urlWithQuery = function(q) {
-        var loc = window.location.href;
-        var idx = loc.indexOf("query=");
-        var qEnc = encodeURIComponent(q);
-        return idx == -1 ? loc + "?query=" + qEnc : loc.substring(0, idx) + "query=" + qEnc;
+    var queryFromUrl = function() {
+        return queryStringToObject().query;
+    };
+    
+    var sortByFromUrl = function() {
+        return queryStringToObject().sortBy;
     };
     
     var secondsAgo = function(date) {
@@ -24,9 +26,9 @@ window.myApp.AjaxInput = (function() {
     };
 
     var lastQueryFinishedAt = null;
-    var updateHistoryForQuery = function(q) {
+    var updateHistoryForQuery = function(q, s) {
         if (history.pushState) {
-            var newUrl = urlWithQuery(q);
+            var newUrl = jsRoutes.controllers.ProductsController.search(q, s).url;
             // For searches withing 5 seconds we don't want to create new history entries
             if(!lastQueryFinishedAt
                     || lastQueryFinishedAt && secondsAgo(lastQueryFinishedAt) < 5)
@@ -49,24 +51,28 @@ window.myApp.AjaxInput = (function() {
     };
     
     var lastQuery = null;
-    
+    var lastSortBy = null;
+
     window.addEventListener("popstate", function(event) {
         // Only trigger live search if there ran any ajax livesearch before,
         // or if the user navigated forward/backward after loading the page
         var q = queryFromUrl();
-        if(lastQuery || q != $("#searchbox").val()) {
+        var s = sortByFromUrl();
+        if(lastQuery || q != $("#searchbox").val() || s != $("#sortBy").val()) {
             $("#searchbox").val(q);
+            $("#sortBy").val(s);
             liveSearch(null, true);
         }
     });
 
     var liveSearch = function liveSearch(event, isPopstate) {
-        var q = $("#searchbox").val();
+        var q = $('#searchbox').val(),
+            s = $('#sortBy').val();
         
         // Skip ajax request if the query didn't change (e.g. because the keyup
         // event was caused be cursor/Pos1/End keys or because chars were added
         // and removed again)
-        if(q == queryFromUrl() && !isPopstate || q == lastQuery) {
+        if(q == queryFromUrl() && s == sortByFromUrl() && !isPopstate || q == lastQuery && s == lastSortBy) {
             return;
         }
 
@@ -74,18 +80,19 @@ window.myApp.AjaxInput = (function() {
         // var sortBy = $(".computers").attr("data-sort-by");
         // var sortOrder = $(".computers").attr("data-sort-order");
         lastQuery = q;
+        lastSortBy = s;
         $("#loading-message").text("Searching " + q);
         $("#overlay").fadeIn(100);
-        jsRoutes.controllers.ProductsController.liveSearch(q).ajax({
+        jsRoutes.controllers.ProductsController.liveSearch(q, s).ajax({
             success : function(data, textStatus, jqXHR) {
                 // If there was another query started we don't take any action
-                if(lastQuery != q) {
+                if(lastQuery != q || lastSortBy != s) {
                     return;
                 }
 
                 console.log("Got response for query " + q);
                 if(!isPopstate)
-                    updateHistoryForQuery(q);
+                    updateHistoryForQuery(q, s);
                 setWindowTitleForQuery(q);
                 // $(document).off('keyup', '#searchbox');
                 window.ajaxUtils.updateHtmlBySelector(data);
@@ -150,11 +157,14 @@ window.myApp.AjaxInput = (function() {
     var init = function init() {
         $("#overlay").hide();
         $("#searchbox").keyup(debounce(liveSearch, 300, false));
+        $("#sortBy").on("change", liveSearch);
         setWindowTitleForQuery(queryFromUrl());
         // Change the url instead of submitting the form, because the form submit
         // would encode spaces as "+" which would not be decoded as space by decodeURIComponent
         $("#searchsubmit").click(function() {
-            location.search = "query=" + encodeURIComponent($('#searchbox').val());
+            var query  = $('#searchbox').val(),
+                sortBy = $('#sortBy').val();
+            location.href = jsRoutes.controllers.ProductsController.search(query, sortBy).url;
             return false;
         });
     };
