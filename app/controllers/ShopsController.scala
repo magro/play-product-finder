@@ -14,6 +14,10 @@ import play.api.mvc._
 import views._
 import java.nio.charset.Charset
 import java.nio.charset.UnsupportedCharsetException
+import play.api.data.validation.Constraint
+import play.api.data.validation.Valid
+import play.api.data.validation.Invalid
+import play.api.data.validation.ValidationError
 
 object ShopsController extends Controller with ShopsSecurity {
 
@@ -32,8 +36,8 @@ object ShopsController extends Controller with ShopsSecurity {
       _.url -> nonEmptyText,
       _.active -> boolean,
       _.queryUrlTemplate -> nonEmptyText,
-      _.queryUrlEncoding -> optional(nonEmptyText.verifying(isCharset(_))),
-      _.responseEncoding -> optional(nonEmptyText.verifying(isCharset(_))),
+      _.queryUrlEncoding -> optional(nonEmptyText.verifying("error.invalidCharset", isCharset(_))),
+      _.responseEncoding -> optional(nonEmptyText.verifying("error.invalidCharset", isCharset(_))),
       _.imageUrlBase -> optional(nonEmptyText),
       _.itemXPath -> nonEmptyText,
       _.nameXPath -> nonEmptyText,

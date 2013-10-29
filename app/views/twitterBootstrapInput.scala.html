@@ -3,10 +3,11 @@
 @**************************************************
 * Generate input according twitter bootsrap rules *
 **************************************************@
-<div class="clearfix @if(elements.hasErrors) {error}">
-    <label for="@elements.id">@elements.label</label>
-    <div class="input">
+<div class="control-group @if(elements.hasErrors) {error}">
+    <label class="control-label" for="@elements.id">@elements.label</label>
+    <div class="controls">
         @elements.input
-        <span class="help-inline">@elements.infos.mkString(", ")</span> 
+        <span class="help-inline">@elements.errors.mkString(", ")</span> 
+        <span class="help-block">@elements.infos.mkString(", ")</span> 
     </div>
 </div>

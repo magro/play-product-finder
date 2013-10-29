@@ -2,6 +2,9 @@
 
 shops.list.title={0,choice,0#No shops|1#One shop|1<{0,number,integer} shops} found
 
+format.boolean=
+error.invalidCharset=Must be a valid charset (e.g. UTF-8)
+
 # Public stuff / product search
 products.search.title=Play! Product Finder
 

@@ -3,18 +3,29 @@ html {
 }
 
 header h1 {
-    padding: 0.4em 1.1em;
     color: white;
     font-weight: normal;
     font-size: 24px;
 }
 
+section h1 {
+	font-size: 30px;
+	line-height: 36px;
+	margin-bottom: 20px;
+}
+
+header a {
+	color: #bfbfbf;
+}
+
+header a:hover {
+	color: white;
+	text-decoration: none;
+}
+
 header #user {
     color: #bfbfbf;
-    float: right;
-    position: absolute;
-    top: 20px;
-    right: 20px;
+    margin-top: 20px;
 }
 
 section#main {
@@ -70,3 +81,66 @@ table.computers .header a {
     color: #666;
 }
 
+table .header {
+	cursor: pointer;
+}
+
+table .header:after {
+	content: "";
+	float: right;
+	margin-top: 7px;
+	border-width: 0 4px 4px;
+	border-style: solid;
+	border-color: #000 transparent;
+	visibility: hidden;
+}
+
+table .headerSortUp,table .headerSortDown {
+	background-color: rgba(141, 192, 219, 0.25);
+	text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+}
+
+table .header:hover:after {
+	visibility: visible;
+}
+
+table .headerSortDown:after,table .headerSortDown:hover:after {
+	visibility: visible;
+	filter: alpha(opacity = 60);
+	-khtml-opacity: 0.6;
+	-moz-opacity: 0.6;
+	opacity: 0.6;
+}
+
+table .headerSortUp:after {
+	border-bottom: none;
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+	border-top: 4px solid #000;
+	visibility: visible;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+	filter: alpha(opacity = 60);
+	-khtml-opacity: 0.6;
+	-moz-opacity: 0.6;
+	opacity: 0.6;
+}
+
+.help-inline,.help-block {
+	line-height: 18px;
+	color: #bfbfbf;
+	padding-left: 5px;
+}
+
+.help-inline {
+	*position: relative;
+	*top: -5px;
+}
+
+.help-block {
+	display: block;
+	font-size: 11px;
+	padding-top: 2px;
+	max-width: 600px;
+}

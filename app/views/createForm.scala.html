@@ -8,29 +8,34 @@
     
     <h1>Add a shop</h1>
     
-    @form(routes.ShopsController.save()) {
+    @form(routes.ShopsController.save(), 'class -> "form-horizontal") {
         
         <fieldset>
+            <legend>General</legend>
         
-            @inputText(shopForm("name"), '_label -> "Shop Name")
-            @inputText(shopForm("shortName"), '_label -> "Shop Short Name")
-            @inputText(shopForm("url"), '_label -> "URL")
+            @inputText(shopForm("name"), '_label -> "Shop Name", 'class -> "input-xlarge")
+            @inputText(shopForm("shortName"), '_label -> "Shop Short Name", 'class -> "input-xlarge")
+            @inputText(shopForm("url"), '_label -> "URL", 'class -> "input-xlarge")
             @checkbox(shopForm("active"), '_label -> "Active")
-            @inputText(shopForm("queryUrlTemplate"), '_label -> "Query Url Template")
-            @inputText(shopForm("queryUrlEncoding"), '_label -> "Query Encoding")
-            @inputText(shopForm("responseEncoding"), '_label -> "Response Encoding")
-            @inputText(shopForm("imageUrlBase"), '_label -> "Image Url Base")
             
-            @inputText(shopForm("itemXPath"), '_label -> "XPath Item")
-            @inputText(shopForm("nameXPath"), '_label -> "XPath Name")
-            @inputText(shopForm("priceXPath"), '_label -> "XPath Price")
-            @inputText(shopForm("imageUrlXPath"), '_label -> "XPath Image Url")
-            @inputText(shopForm("detailsUrlXPath"), '_label -> "XPath Details Url")
+        </fieldset>
+        <fieldset>
+            <legend>Scraping Info</legend>
+            
+            @inputText(shopForm("queryUrlTemplate"), '_label -> "Query Url Template", 'class -> "input-xlarge")
+            @inputText(shopForm("queryUrlEncoding"), '_label -> "Query Encoding", 'class -> "input-xlarge")
+            @inputText(shopForm("responseEncoding"), '_label -> "Response Encoding", 'class -> "input-xlarge")
+            @inputText(shopForm("imageUrlBase"), '_label -> "Image Url Base", 'class -> "input-xlarge")
+            @inputText(shopForm("itemXPath"), '_label -> "XPath Item", 'class -> "input-xlarge")
+            @inputText(shopForm("nameXPath"), '_label -> "XPath Name", 'class -> "input-xlarge")
+            @inputText(shopForm("priceXPath"), '_label -> "XPath Price", 'class -> "input-xlarge")
+            @inputText(shopForm("imageUrlXPath"), '_label -> "XPath Image Url", 'class -> "input-xlarge")
+            @inputText(shopForm("detailsUrlXPath"), '_label -> "XPath Details Url", 'class -> "input-xlarge")
 
         </fieldset>
         
-        <div class="actions">
-            <input type="submit" value="Create this shop" class="btn primary"> or 
+        <div class="form-actions">
+            <input type="submit" value="Create this shop" class="btn btn-primary"> or 
             <a href="@routes.ShopsController.list()" class="btn">Cancel</a> 
         </div>
         

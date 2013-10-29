@@ -23,7 +23,7 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
       browser.url() must endWith(routes.ShopsController.login.url)
       browser.$("#username").text(ShopsSecurity.ValidUsername)
       browser.$("#password").text(ShopsSecurity.ValidPassword)
-      browser.$("input.primary").click()
+      browser.$("input.btn-primary").click()
 
       browser.url() must endWith(routes.ShopsController.list().url)
       browser.$("#user").first.getText must contain(ShopsSecurity.ValidUsername)
@@ -46,25 +46,25 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
       browser.$("section h1").first.getText must equalTo("Edit shop")
 
       browser.$("#url").text("")
-      browser.$("input.primary").click()
+      browser.$("input.btn-primary").click()
 
       browser.$("div.error").size must equalTo(1)
       browser.$("div.error label").first.getText must equalTo("URL")
 
       browser.$("#url").text("http://example.com")
-      browser.$("input.primary").click()
+      browser.$("input.btn-primary").click()
 
       browser.$("section h1").first.getText must equalTo("3 shops found")
-      browser.$(".alert-message").first.getText must equalTo("Done! Shop FC St. Pauli has been updated")
+      browser.$(".alert").first.getText must equalTo("Done! Shop FC St. Pauli has been updated")
 
       browser.$("#searchbox").text("Pauli")
       browser.$("#searchsubmit").click()
 
       browser.$("a", withText("FC St. Pauli")).click()
-      browser.$("input.danger").click()
+      browser.$("input.btn-danger").click()
 
       browser.$("section h1").first.getText must equalTo("2 shops found")
-      browser.$(".alert-message").first.getText must equalTo("Done! Shop has been deleted")
+      browser.$(".alert").first.getText must equalTo("Done! Shop has been deleted")
 
       browser.$("#searchbox").text("Pauli")
       browser.$("#searchsubmit").click()
