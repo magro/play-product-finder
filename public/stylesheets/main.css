@@ -11,6 +11,7 @@ header h1 {
 section h1 {
 	font-size: 30px;
 	line-height: 36px;
+	margin-top: 0px;
 	margin-bottom: 20px;
 }
 
@@ -32,12 +33,13 @@ section#main {
     position: relative;
     padding: 5em 2em;
     border-bottom: 1px solid #ccc;
+    margin-top: 10px;
     min-height: 600px;
 } 
 
 section#main .topRight {
     position: absolute;
-    right: 20px;
+    right: 25px;
     top: 70px;
 }
 
