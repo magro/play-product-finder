@@ -16,6 +16,8 @@ GET		/logout						controllers.ShopsController.logout
 # Default path will just redirect to the shop list
 GET		/							controllers.ShopsController.index()
 
+GET    /shops/selectTheme/:theme	controllers.ShopsController.selectTheme(theme)
+
 GET		/shops						controllers.ShopsController.list(p:Int ?= 0, s:Int ?= 2, f ?= "")
 
 # Add shop

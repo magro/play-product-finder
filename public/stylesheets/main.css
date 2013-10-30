@@ -24,9 +24,12 @@ header a:hover {
 	text-decoration: none;
 }
 
-header #user {
-    color: #bfbfbf;
-    margin-top: 20px;
+header #nav-options {
+    margin-top: 10px;
+}
+
+header #nav-options .dropdown .caret {
+	margin-left: 8px;
 }
 
 section#main {
@@ -62,12 +65,6 @@ table.computers .header a {
 
 #actions {
     position: relative;
-}
-
-#actions #add {
-    position: absolute;
-    right: 0;
-    top: 0;
 }
 
 #pagination {

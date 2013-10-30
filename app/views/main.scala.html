@@ -1,11 +1,62 @@
 @(title: String)(content: Html)(implicit request: Request[_])
+@import helper._
+@import ShopsController.theme
+
+@**************************************
+* Helper to get the bootstrap css     *
+**************************************@
+@bootstrapCss = @{
+  val theme = ShopsController.theme
+  if(theme == ShopsController.defaultTheme)
+    "stylesheets/bootstrap.min.css"
+  else
+    "stylesheets/bootstrap_" + theme + ".min.css"
+}
+
+@*********************************************************
+* Helper for the nav options menu (user/themes selector) *
+*********************************************************@
+@navOptionsMenu = {
+  <ul id="nav-options" class="nav pull-right">
+    <li id="fat-menu" class="dropdown">
+      @if(request.isInstanceOf[Security.AuthenticatedRequest[_, _]]) {
+        @defining(request.asInstanceOf[Security.AuthenticatedRequest[_, String]]) { authRequest =>
+         <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown">@authRequest.user<b class="caret"></b></a>
+         <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
+           <li role="presentation"><a role="menuitem" tabindex="-1" href="@routes.ShopsController.logout()">Logout</a></li>
+           <li role="presentation" class="divider"></li>
+        }
+      } else {
+        <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown">@Messages("shops.theme.label")<b class="caret"></b></a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
+      }
+      @defining(ShopsController.theme) { currentTheme =>
+        <!-- dropdown menu links -->
+        @for(entry <- Seq(
+          "default" -> "Default",
+          "cyborg" -> "Cyborg",
+          "flatly" -> "Flatly",
+          "slate" -> "Slate",
+          "spacelab" -> "Spacelab",
+          "superhero" -> "Superhero")) {
+            <li role="presentation" @if(currentTheme == entry._1) {class="active"}>
+              <a role="menuitem" tabindex="-1" href="@routes.ShopsController.selectTheme(entry._1)">@entry._2</a>
+            </li>
+        }
+      }
+      </ul>
+    </li>
+  </ul>
+}
 
 <!DOCTYPE html>
 <html>
     <head>
         <title>Play! Product Finder / Admin / @title</title>
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")"> 
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/main.css")"> 
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at(bootstrapCss)">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
+        <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+        <script type="text/javascript" src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     </head>
     <body>
         
@@ -17,16 +68,7 @@
                             Play sample application &mdash; Shopping search buddy
                         </a>
                     </h1>
-                    <div class="pull-right">
-                    @** Hack into request type, so that we can use the same template for both login and authenticated views **@
-                    @if(request.isInstanceOf[Security.AuthenticatedRequest[_, _]]) {
-                        @defining(request.asInstanceOf[Security.AuthenticatedRequest[_, String]]) { authRequest =>
-                            <dl id="user">
-                                <dd>@authRequest.user (<a id="logout" href="@routes.ShopsController.logout()">Logout</a>)</dd>
-                            </dl>
-                        }
-                    }
-                    </div>
+                    @navOptionsMenu
                 </div>
             </div>
         </header>
@@ -34,6 +76,12 @@
         <section id="main" class="container">
             @content
         </section>
+        
+        <footer class="footer">
+            <div class="container">
+              Copyright © 2013 <a href="https://twitter.com/martin_grotzke">@@martin_grotzke</a>
+            </div>
+        </footer>
         
     </body>
 </html>

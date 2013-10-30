@@ -31,12 +31,12 @@
 
     <div id="actions">
         
-        @helper.form(action=routes.ShopsController.list(), 'class -> "form-search") {
+        @helper.form(action=routes.ShopsController.list(), 'class -> "form-search pull-left") {
             <input type="search" id="searchbox" name="f" value="@currentFilter" class="input-medium search-query" placeholder="Filter by shop name...">
             <input type="submit" id="searchsubmit" value="Filter by name" class="btn btn-primary">
         }
         
-        <a class="btn btn-success" id="add" href="@routes.ShopsController.create()">Add a new shop</a>
+        <a class="btn btn-success pull-right" id="add" href="@routes.ShopsController.create()">Add a new shop</a>
         
     </div>
     
@@ -107,5 +107,4 @@
         
     }
 
-        
 }

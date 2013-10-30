@@ -1,5 +1,7 @@
 package controllers
 
+import java.nio.charset.Charset
+import java.nio.charset.UnsupportedCharsetException
 import scala.concurrent.Future
 import models._
 import models.activate._
@@ -12,14 +14,12 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.mvc._
 import views._
-import java.nio.charset.Charset
-import java.nio.charset.UnsupportedCharsetException
-import play.api.data.validation.Constraint
-import play.api.data.validation.Valid
-import play.api.data.validation.Invalid
-import play.api.data.validation.ValidationError
+import play.api.http.Status
 
 object ShopsController extends Controller with ShopsSecurity {
+  
+  private val playThemeCookie = "play_theme"
+  val defaultTheme = "default"
 
   /**
    * This result directly redirect to the application home.
@@ -149,5 +149,26 @@ object ShopsController extends Controller with ShopsSecurity {
       }
     }
   }
+
+  /**
+   * Switch theme.
+   */
+  def selectTheme(theme: String) = Action { implicit request =>
+    val redirect = request.headers.get("Referer").map(SeeOther(_)).getOrElse(Home)
+    if (theme == "default")
+      redirect.withCookies(DiscardingCookie(playThemeCookie).toCookie)
+    else {
+      val cookie = request.cookies.get(playThemeCookie)
+        .map(c => c.copy(value = theme))
+        .getOrElse(
+          Cookie(name = playThemeCookie, value = theme, maxAge = Some(3600 * 24 * 30)))
+      redirect.withCookies(cookie)
+    }
+  }
+
+  /**
+   * Get the current theme from the cookie. If there's no theme stored use "default". 
+   */
+  def theme(implicit request: RequestHeader): String = request.cookies.get(playThemeCookie).map(_.value).getOrElse(defaultTheme)
 
 }
