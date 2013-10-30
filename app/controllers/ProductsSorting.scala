@@ -5,7 +5,6 @@ import scala.util.Sorting
 import scala.collection.immutable.TreeMap
 import scala.util.Sorting
 import play.api.i18n.Messages
-import com.sun.jna.platform.win32.Advapi32Util.Account
 import play.api.mvc.QueryStringBindable
 
 sealed trait ProductsSorting {
