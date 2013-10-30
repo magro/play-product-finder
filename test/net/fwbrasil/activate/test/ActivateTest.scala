@@ -115,9 +115,33 @@ trait ActivateTest { self: Specification =>
 
     def inBrowserWithActivate[R](f: TestBrowser => R)( implicit evidence$1 : org.specs2.execute.AsResult[R]): org.specs2.specification.Example = {
       self.inExample(thing).in {
-        running(TestServer(3333), FIREFOX) { browser =>
+        running(TestServer(3333))(withBrowser { browser =>
           val app = play.api.Play.current
           strategy.runTest(None, f(browser))(context(app))
+        })
+      }
+    }
+
+    /**
+     * Executes a block of code with a test browser.
+     */
+    private def withBrowser[T](block: TestBrowser => T): T = {
+      var browser: TestBrowser = null
+      synchronized {
+        try {
+          // Use HtmlUnitDriver with Firefix 17, as with Chrome and IE (default) tests fail with e.g.
+          // WebDriverException: com.gargoylesoftware.htmlunit.ScriptException: TypeError: Cannot find
+          // function addEventListener in object [object HTMLDocument]. (http://code.jquery.com/jquery-1.10.1.min.js#5)
+          import org.openqa.selenium.htmlunit._
+          import com.gargoylesoftware.htmlunit._
+          val driver = new HtmlUnitDriver(BrowserVersion.FIREFOX_17)
+          driver.setJavascriptEnabled(true)
+          browser = TestBrowser(driver, None)
+          block(browser)
+        } finally {
+          if (browser != null) {
+            browser.quit()
+          }
         }
       }
     }
