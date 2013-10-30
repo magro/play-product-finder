@@ -5,6 +5,8 @@ This is a Play! Framework 2 sample project that shows reactive (non-blocking) da
 
 [![Build Status](https://jenkins.inoio.de/job/play-webshop/badge/icon)](http://jenkins.inoio.de/job/play-webshop/)
 
+This project demonstrates:
+
 * End to end async/reactive I/O (REST/WS + DB)
 * Using [Activate](http://activate-framework.org/) (Async/Reactive) Persistence
   * Activate database migrations
