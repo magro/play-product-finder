@@ -72,6 +72,7 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
       browser.$("section h1").first.getText must equalTo("One shop found")
 
       // Logout
+      browser.$("#user").click()
       browser.$("#logout").click()
       browser.url() must endWith(routes.ShopsController.login.url)
 

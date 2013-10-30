@@ -21,13 +21,13 @@
     <li id="fat-menu" class="dropdown">
       @if(request.isInstanceOf[Security.AuthenticatedRequest[_, _]]) {
         @defining(request.asInstanceOf[Security.AuthenticatedRequest[_, String]]) { authRequest =>
-         <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown">@authRequest.user<b class="caret"></b></a>
+         <a href="#" id="user" role="button" class="dropdown-toggle" data-toggle="dropdown">@authRequest.user<b class="caret"></b></a>
          <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
-           <li role="presentation"><a role="menuitem" tabindex="-1" href="@routes.ShopsController.logout()">Logout</a></li>
+           <li role="presentation"><a id="logout" role="menuitem" tabindex="-1" href="@routes.ShopsController.logout()">Logout</a></li>
            <li role="presentation" class="divider"></li>
         }
       } else {
-        <a href="#" id="drop3" role="button" class="dropdown-toggle" data-toggle="dropdown">@Messages("shops.theme.label")<b class="caret"></b></a>
+        <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">@Messages("shops.theme.label")<b class="caret"></b></a>
         <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
       }
       @defining(ShopsController.theme) { currentTheme =>

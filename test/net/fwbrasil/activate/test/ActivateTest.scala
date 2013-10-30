@@ -115,7 +115,7 @@ trait ActivateTest { self: Specification =>
 
     def inBrowserWithActivate[R](f: TestBrowser => R)( implicit evidence$1 : org.specs2.execute.AsResult[R]): org.specs2.specification.Example = {
       self.inExample(thing).in {
-        running(TestServer(3333), HTMLUNIT) { browser =>
+        running(TestServer(3333), FIREFOX) { browser =>
           val app = play.api.Play.current
           strategy.runTest(None, f(browser))(context(app))
         }
