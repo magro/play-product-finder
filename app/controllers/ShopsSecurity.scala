@@ -25,19 +25,30 @@ private[controllers] trait ShopsSecurity { self: Controller =>
 
   private def getUserFromRequest(request: RequestHeader) = request.session.get(Username)
 
+  /**
+   * When a secured resource was accessed save the requested url in the session and redirect to login.
+   */
   private def onUnauthorized: RequestHeader => SimpleResult = { rh: RequestHeader =>
     Redirect(routes.ShopsController.login).withSession(OriginalUrl -> rh.uri)
   }
 
   /**
-   * Describe the shop form (used in both edit and create screens).
+   * Describe the login form, contains just username and password.
    */
   private val loginForm = Form(tuple(Username -> email.verifying(nonEmpty), Password -> nonEmptyText))
 
+  /**
+   * Show the login page.
+   */
   def login = Action { implicit request =>
     Ok(views.html.login(loginForm))
   }
 
+  /**
+   * Handle login form submit: authenticates the user and either displays
+   * the login page again (with errors) or redirect to the originally requested
+   * url (or shop list when there's no original url saved in the session).
+   */
   def authenticate = Action { implicit request =>
     loginForm.bindFromRequest.fold(
       // binding failure, retrieving the form containing errors:
@@ -63,8 +74,19 @@ private[controllers] trait ShopsSecurity { self: Controller =>
       })
   }
 
+  /**
+   * Logout the user, redirect to login.
+   */
   def logout = Action { implicit request =>
     Redirect(routes.ShopsController.login).withNewSession.flashing("success" -> "You've been logged out")
+  }
+
+  /**
+   * Retrieves the username of the logged in user. Returns <code>None</code> if there's no user logged in.
+   */
+  def loggedInUser(implicit request: Request[_]): Option[String] = request match {
+    case authReq: Security.AuthenticatedRequest[_, _] => Some(authReq.user.asInstanceOf[String])
+    case _ => None
   }
 
 }
