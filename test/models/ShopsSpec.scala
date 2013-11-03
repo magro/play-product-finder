@@ -1,4 +1,4 @@
-package models.activate
+package models
 
 import org.specs2.mutable._
 import org.specs2.runner._
@@ -6,15 +6,15 @@ import org.junit.runner._
 import play.api.test._
 import play.api.test.Helpers._
 import net.fwbrasil.activate.test._
-import scala.concurrent.Future
+import shopPersistenceContext._
 
 @RunWith(classOf[JUnitRunner])
-class ShopsSpec extends Specification with AsyncActivateTest
+class ShopsSpec extends Specification with AsyncActivateTest 
 	with DefaultAwaitTimeout with FutureAwaits {
   
   // -- Date helpers
 
-  def dateIs(date: java.util.Date, str: String) = new java.text.SimpleDateFormat("yyyy-MM-dd").format(date) == str
+  def dateIs(date: java.util.Date, str: String) = (new java.text.SimpleDateFormat("yyyy-MM-dd")).format(date) == str
 
   // --
 

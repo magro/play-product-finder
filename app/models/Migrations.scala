@@ -1,11 +1,7 @@
-package models.activate
+package models
 
 import shopPersistenceContext._
 import net.fwbrasil.activate.migration.Migration
-import scala.collection.mutable.{ Map => MutableMap }
-import java.util.Date
-import java.text.SimpleDateFormat
-import net.fwbrasil.activate.migration.IfExists
 
 class CreateSchema extends Migration {
 

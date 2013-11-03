@@ -29,7 +29,7 @@ object asyncCleanDatabaseStrategy extends Strategy {
     if (storage.isInstanceOf[AsyncPostgreSQLStorage]) {
       transactional {
         // TODO: find a better way to dynamically delete all entities
-        import models.activate._
+        import models._
         all[Shop].foreach(_.delete)
       }
     }

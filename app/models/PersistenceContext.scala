@@ -1,17 +1,13 @@
-package models.activate
+package models
 
 import net.fwbrasil.activate.ActivateContext
-import net.fwbrasil.activate.storage.Storage
-import net.fwbrasil.activate.storage.memory.TransientMemoryStorage
-import net.fwbrasil.activate.storage.relational.PooledJdbcRelationalStorage
-import net.fwbrasil.activate.storage.relational.idiom.postgresqlDialect
-import net.fwbrasil.activate.storage.relational.idiom.h2Dialect
 import net.fwbrasil.activate.storage.relational.async.AsyncPostgreSQLStorage
 import com.github.mauricio.async.db.Configuration
 import com.github.mauricio.async.db.pool.PoolConfiguration
 import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
 import play.api._
 import com.github.mauricio.async.db.postgresql.util.URLParser
+import play.api.Play.current
 
 //import net.fwbrasil.activate.ActivateContext
 //import net.fwbrasil.activate.storage.memory.TransientMemoryStorage

@@ -1,15 +1,11 @@
-package models.activate
+package models
 
-import java.util.Date
+import business.WebShop
 import shopPersistenceContext._
 import scales.xml.jaxen.ScalesXPath
-import _root_.models.ScrapingDescription
-import models.Page
 import net.fwbrasil.radon.transaction.TransactionalExecutionContext
 import scala.concurrent.Future
-import models.WebShop
 import play.api.libs.ws.WS
-import scala.collection.immutable.Map
 import play.api.Logger
 
 case class ShopScrapingDescription(shortName: String, queryUrlTemplate: String, queryUrlEncoding: Option[String] = None,
@@ -36,7 +32,7 @@ case class ShopScrapingDescription(shortName: String, queryUrlTemplate: String, 
 object ShopScrapingDescription {
   
   private val queryUrlPattern = "(.*)\\?(?:(.*)&)?(.+)=\\{query\\}".r
-  private[activate] def parseQueryUrlTemplate(queryUrlTemplate: String): Option[(String, List[(String, String)], String)] = queryUrlTemplate match {
+  private[models] def parseQueryUrlTemplate(queryUrlTemplate: String): Option[(String, List[(String, String)], String)] = queryUrlTemplate match {
     case queryUrlPattern(url, queryParamsString, queryParam) => {
       val tokens = if(queryParamsString == null) Nil else
         queryParamsString.split("&").toList.map{ queryParam =>
@@ -61,6 +57,14 @@ object ShopScrapingDescription {
       detailsUrlXPath = localXPath(shop.detailsUrlXPath))
 }
 
+/**
+ * Helper for pagination.
+ */
+case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
+  lazy val prev = Option(page - 1).filter(_ >= 0)
+  lazy val next = Option(page + 1).filter(_ => (offset + items.size) < total)
+}
+
 @Alias("shop")
 class Shop(
   var name: String,
@@ -83,6 +87,12 @@ class Shop(
 }
 
 object Shop {
+  
+  // import play.api.libs.concurrent.Execution.Implicits.defaultContext
+
+  def findActiveMapped[T](f: Shop => T): Future[List[T]] = asyncTransactionalChain { implicit ctx =>
+    findActive(ctx).map(_.map(f))
+  }
   
   def findActive(implicit ctx: TransactionalExecutionContext): Future[List[Shop]] = {
     asyncQuery { (s: Shop) => where(s.active :== true) select (s) orderBy (s.id) }

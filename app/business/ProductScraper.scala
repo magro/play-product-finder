@@ -1,6 +1,9 @@
-package models
+package business
 
-import play.api.libs.ws.WS
+import models.ProductInfo
+import org.joda.money.{CurrencyUnit, Money}
+import org.joda.money.format.MoneyFormatterBuilder
+import play.api.libs.ws.Response
 import scala.concurrent.Future
 import scala.xml._
 import scales.utils._
@@ -8,38 +11,8 @@ import scales.utils.ScalesUtils._
 import scales.xml._
 import scales.xml.ScalesXml._
 import scales.xml.jaxen._
-import scales.utils.resources.SimpleUnboundedPool
 import scales.xml.parser.sax.DefaultSaxSupport
-import play.api.libs.ws.Response
-import models.activate.ShopScrapingDescription
-import java.util.Currency
-import org.joda.money.{CurrencyUnit, Money}
-import org.joda.money.format.MoneyFormatterBuilder
-
-object WebShopTest extends App {
-
-//  val node = HTMLParser.loadURI("http://www.fcsp-shop.com/advanced_search_result.php?keywords=hoody")
-//  println(node)
-  
-  // Kommt nichts raus:
-  // http://www.fcsp-shop.com/advanced_search_result.php?keywords=hoody
-  // Aber hier:
-  // http://www.fcsp-shop.com/advanced_search_result.php?keywords=Feuerzeug
-  
-  /*
-   * http://www.rocknshop.de/advanced_search_result.php?keywords=Kapuzenpulli&categories_id=1349&inc_subcat=1
-   */
-  
-  //*
-  val doc = WebDocument.load("http://www.fcsp-shop.com/advanced_search_result.php?keywords=Feuerzeug")
-  println(doc.document)
-  val artnrs = doc.getElementsByClassName("name")
-  println("Artnrs: " + artnrs.map(_.text).mkString(", "))
-  // */
-  
-  // println(WebDocument.parse("<html></html>").document)
-  
-}
+import scales.utils.resources.SimpleUnboundedPool
 
 trait ScrapingDescription {
   /**
@@ -67,23 +40,8 @@ trait WebShop extends ScrapingDescription {
 }
 
 object ProductScraper {
-  
-  def search(query: String, shop: WebShop): Future[List[ProductInfo]] = {
 
-    implicit val context = scala.concurrent.ExecutionContext.Implicits.global
-
-    shop.search(query).map { resp =>
-      val content = bodyWithShopEncoding(resp, shop)
-      // println("Got response body " + resp.body)
-      ProductScraper.extractProducts(content, shop)
-    }
-  }
-
-  private def bodyWithShopEncoding(resp: Response, shop: WebShop): String = {
-    shop.responseEncoding.map(charset => resp.ahcResponse.getResponseBody(charset)).getOrElse(resp.body)
-  }
-
-  def extractProducts(content: String, shop: WebShop): List[models.ProductInfo] = {
+  def extractProducts(content: String, shop: WebShop): List[ProductInfo] = {
     
     val doc = loadXmlReader(Source.fromString(content), strategy = defaultPathOptimisation, parsers = NuValidatorFactoryPool)
     val root = top(doc)
@@ -130,11 +88,16 @@ object ProductScraper {
 
 }
 
-object ProductInfo {
-  private val moneyFormatter = new MoneyFormatterBuilder().appendAmountLocalized().appendLiteral(" ").appendCurrencySymbolLocalized().toFormatter()
-}
+object NuValidatorFactoryPool extends SimpleUnboundedPool[org.xml.sax.XMLReader] with DefaultSaxSupport {
+  def create = {
 
-case class ProductInfo(val name: String, val price: Money, val imageUrl: String, val detailsUrl: String, val shopName: String) {
+    import nu.validator.htmlparser.{ sax, common }
+    import sax.HtmlParser
+    import common.XmlViolationPolicy
 
-  def priceFormatted(implicit lang: play.api.i18n.Lang) = ProductInfo.moneyFormatter.withLocale(lang.toLocale).print(price)
+    val reader = new HtmlParser
+    reader.setXmlPolicy(XmlViolationPolicy.ALLOW)
+    reader.setXmlnsPolicy(XmlViolationPolicy.ALLOW)
+    reader
+  }
 }

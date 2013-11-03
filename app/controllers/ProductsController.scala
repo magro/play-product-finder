@@ -17,6 +17,22 @@ import scala.math.Ordering
 import scala.collection.immutable.ListMap
 import scala.collection.immutable.TreeMap
 import scala.collection.Iterable
+import business.ProductSearch
+
+
+object Foo extends App {
+  case class Version(major: Int, minor: Int, bugfix: Int) {
+    private val version = "(\\d+)\\.(\\d+)\\.(\\d+)".r
+    def apply(v: String): Option[Version] = v match {
+      case version(maj, min, fix) => Some(Version(maj.toInt, min.toInt, fix.toInt))
+    }
+  } 
+  
+  println("""
+          |This project uses Play %1$s while your Play installation uses %2$s!
+          |Update the Play sbt-plugin version to %2$s (usually in project/plugins.sbt) or install Play %1$s" 
+        """.stripMargin.format("2.2.1", "2.2.0"))
+}
 
 object ProductsController extends Controller {
 
@@ -48,11 +64,11 @@ object ProductsController extends Controller {
 
   private def searchProducts(query: String, sortBy: ProductsSorting): Future[Iterable[models.ProductInfo]] = {
     for {
-      shops <- WebShops.findActive
+      shops <- Shop.findActiveMapped(shop => shop.scrapingDescription)
       products <- Future.sequence(
-        shops.map(
-          ProductScraper.search(query, _)
-            .map(_.filter(p => !StringUtils.isEmpty(p.imageUrl)))))
+        shops.map(shop =>
+          ProductSearch.search(query, shop)
+            .map(products => products.filter(p => !StringUtils.isEmpty(p.imageUrl)))))
     } yield sortBy.sort(products)
   }
 

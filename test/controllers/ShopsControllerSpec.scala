@@ -11,7 +11,7 @@ import net.fwbrasil.activate.test._
 class ShopsControllerSpec extends Specification with ActivateTest {
 
   override def strategy: Strategy = recreateDatabaseStrategy
-  override def context(app: play.api.Application) = models.activate.shopPersistenceContext
+  override def context(app: play.api.Application) = models.shopPersistenceContext
 
   private def AuthenticatedFakeRequest() = FakeRequest().withSession(ShopsSecurity.Username -> "foo@bar.org")
 

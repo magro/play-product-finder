@@ -4,8 +4,7 @@ import java.nio.charset.Charset
 import java.nio.charset.UnsupportedCharsetException
 import scala.concurrent.Future
 import models._
-import models.activate._
-import models.activate.shopPersistenceContext._
+import models.shopPersistenceContext._
 import net.fwbrasil.activate.ActivateContext
 import net.fwbrasil.activate.play.EntityForm
 import net.fwbrasil.activate.play.EntityForm._
@@ -15,6 +14,7 @@ import play.api.data.Forms._
 import play.api.mvc._
 import views._
 import play.api.http.Status
+import models.Shop
 
 object ShopsController extends Controller with ShopsSecurity {
   

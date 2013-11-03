@@ -5,11 +5,11 @@ import org.specs2.runner._
 import org.junit.runner._
 import play.api.test._
 import play.api.test.Helpers._
-import models.activate._
 import net.fwbrasil.activate.test._
+import business.ProductScraper
 
 @RunWith(classOf[JUnitRunner])
-class XmlSpecification extends Specification with ActivateTest {
+class ProductScraperSpec extends Specification with ActivateTest {
 
   override def strategy: Strategy = cleanDatabaseStrategy
   override def context(app: play.api.Application) = shopPersistenceContext
@@ -124,7 +124,7 @@ class XmlSpecification extends Specification with ActivateTest {
           </div>
         </body>
       </html>
-                    """
+      """
 
       val items = ProductScraper.extractProducts(content, SeedShops.nixgut.scrapingDescription)
       items must haveSize(1)

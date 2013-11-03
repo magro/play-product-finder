@@ -11,7 +11,7 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
   // reinitializeContext
   
   override def strategy: Strategy = recreateDatabaseStrategy
-  override def context(app: play.api.Application) = models.activate.shopPersistenceContext
+  override def context(app: play.api.Application) = models.shopPersistenceContext
 
   "Shop managment" should {
 
