@@ -1,7 +1,7 @@
 import play.Project._
 import com.typesafe.sbteclipse.core.EclipsePlugin.EclipseKeys
 
-name := "play-webshop"
+name := "play-product-finder"
 
 version := "1.0"
 
