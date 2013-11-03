@@ -65,7 +65,6 @@ case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
   lazy val next = Option(page + 1).filter(_ => (offset + items.size) < total)
 }
 
-@Alias("shop")
 class Shop(
   var name: String,
   var shortName: Option[String],

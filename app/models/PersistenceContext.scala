@@ -2,6 +2,7 @@ package models
 
 import net.fwbrasil.activate.ActivateContext
 import net.fwbrasil.activate.storage.relational.async.AsyncPostgreSQLStorage
+import net.fwbrasil.activate.storage.relational.idiom.postgresqlDialect
 import com.github.mauricio.async.db.Configuration
 import com.github.mauricio.async.db.pool.PoolConfiguration
 import com.github.mauricio.async.db.postgresql.pool.PostgreSQLConnectionFactory
@@ -65,6 +66,8 @@ object shopPersistenceContext extends ActivateContext {
     // (see PoolConfiguration.Default)
     // Might use config parameters from application.conf
     override def poolConfiguration = new PoolConfiguration(200, 20, 500)
+
+    override val dialect = postgresqlDialect(escape = noEscape, normalize = underscoreSeparated)
 
     lazy val objectFactory = new PostgreSQLConnectionFactory(configuration)
   }

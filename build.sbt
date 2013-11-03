@@ -18,8 +18,8 @@ addCompilerPlugin("com.foursquare.lint" %% "linter" % "0.1-SNAPSHOT")
 libraryDependencies ++= Seq(
   jdbc,
   anorm,
-  "net.fwbrasil" %% "activate-play" % "1.4.2" exclude("org.scala-stm", "scala-stm_2.10.0"),
-  "net.fwbrasil" %% "activate-jdbc-async" % "1.4.2",
+  "net.fwbrasil" %% "activate-play" % "1.5-SNAPSHOT",
+  "net.fwbrasil" %% "activate-jdbc-async" % "1.5-SNAPSHOT",
   "nu.validator.htmlparser" % "htmlparser" % "1.4",
   "org.scalesxml" %% "scales-xml" % "0.6.0-M1",
   // and additionally use these for String based XPaths
