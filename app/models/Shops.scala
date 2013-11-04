@@ -4,6 +4,7 @@ import business.WebShop
 import shopPersistenceContext._
 import scales.xml.jaxen.ScalesXPath
 import net.fwbrasil.radon.transaction.TransactionalExecutionContext
+import net.fwbrasil.activate.statement.query.OrderByCriteria
 import scala.concurrent.Future
 import play.api.libs.ws.WS
 import play.api.Logger
@@ -98,19 +99,8 @@ object Shop {
   }
 
   def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 2, filter: String = "*")(implicit ctx: TransactionalExecutionContext): Future[Page[Shop]] = {
-    val pagination = asyncPaginatedQuery { (s: Shop) =>
-      where(toUpperCase(s.name) like filter.toUpperCase) select (s) orderBy {
-        orderBy match {
-          case -2 =>
-            s.name desc
-          case -3 =>
-            s.active desc
-          case 2 =>
-            s.name
-          case 3 =>
-            s.active
-        }
-      }
+    val pagination = asyncPaginatedQuery { ((s: Shop) =>
+      where(toUpperCase(s.name) like filter.toUpperCase) select (s) orderBy (order(orderBy, s)))
     }
 
     pagination.navigator(pageSize).flatMap { navigator =>
@@ -119,6 +109,25 @@ object Shop {
       else
         Future(Page(Nil, 0, 0, 0))
     }
+  }
+
+  private def order(orderBy: Int, s: models.Shop): OrderByCriteria[_] = orderBy match {
+    case -2 =>
+      s.name desc
+    case -3 =>
+      s.url desc
+    case -4 =>
+      s.active desc
+    case -5 =>
+      s.id desc // s.creationDateTime fails with StringIndexOutOfBoundsException: String index out of range: 35
+    case 2 =>
+      s.name
+    case 3 =>
+      s.url
+    case 4 =>
+      s.active
+    case 5 =>
+      s.id
   }
 
 }
