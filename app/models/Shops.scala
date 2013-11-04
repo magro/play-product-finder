@@ -7,6 +7,7 @@ import net.fwbrasil.radon.transaction.TransactionalExecutionContext
 import net.fwbrasil.activate.statement.query.OrderByCriteria
 import scala.concurrent.Future
 import play.api.libs.ws.WS
+import play.api.libs.ws.Response
 import play.api.Logger
 
 case class ShopScrapingDescription(shortName: String, queryUrlTemplate: String, queryUrlEncoding: Option[String] = None,
@@ -14,7 +15,7 @@ case class ShopScrapingDescription(shortName: String, queryUrlTemplate: String, 
   itemXPath: ScalesXPath, nameXPath: ScalesXPath, priceXPath: ScalesXPath,
   imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends WebShop {
 
-  def search(query: String) = {
+  def search(query: String): Future[Response] = {
     // "http://www.fcsp-shop.com/advanced_search_result.php?keywords={query}"
     ShopScrapingDescription.parseQueryUrlTemplate(queryUrlTemplate).map { case (url, queryParams, searchParam) =>
       val ws = WS.url(url)

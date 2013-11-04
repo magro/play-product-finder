@@ -1,8 +1,10 @@
 package business
 
+import play.api.Logger
 import play.api.libs.ws.Response
 import scala.concurrent.Future
 import models.ProductInfo
+import scala.concurrent.duration.Duration
 
 /**
  * Product search service.
@@ -16,7 +18,12 @@ object ProductSearch {
 
     implicit val context = scala.concurrent.ExecutionContext.Implicits.global
 
+    val start = System.currentTimeMillis()
+
     shop.search(query).map { resp =>
+
+      Logger.debug(s"Response from ${shop.shortName} took ${System.currentTimeMillis() - start} ms")
+
       val content = bodyWithShopEncoding(resp, shop)
       // println("Got response body " + resp.body)
       ProductScraper.extractProducts(content, shop)
