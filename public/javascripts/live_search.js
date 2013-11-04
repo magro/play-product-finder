@@ -76,13 +76,11 @@ window.myApp.AjaxInput = (function() {
             return;
         }
 
-        console.log("running liveSearch with " + q);
-        // var sortBy = $(".computers").attr("data-sort-by");
-        // var sortOrder = $(".computers").attr("data-sort-order");
         lastQuery = q;
         lastSortBy = s;
         $("#loading-message").text("Searching " + q);
         $("#overlay").fadeIn(100);
+        console.log("running liveSearch with " + q);
         jsRoutes.controllers.ProductsController.liveSearch(q, s).ajax({
             success : function(data, textStatus, jqXHR) {
                 // If there was another query started we don't take any action
@@ -91,13 +89,16 @@ window.myApp.AjaxInput = (function() {
                 }
 
                 console.log("Got response for query " + q);
+
+                // Update the history if we didn't get invoked by a history event
                 if(!isPopstate)
                     updateHistoryForQuery(q, s);
+
+                // Update window/page
                 setWindowTitleForQuery(q);
-                // $(document).off('keyup', '#searchbox');
                 window.ajaxUtils.updateHtmlBySelector(data);
+
                 $("#overlay").fadeOut(500);
-                // $(document).on('keyup', '#searchbox', debounce(liveSearch, 300, false));
             },
             dataType : "json"
         });
