@@ -3,7 +3,7 @@ Play Product Finder - Reactive Showcase
 
 This is a Play! Framework 2 sample project that shows reactive (non-blocking) database access and reactive WS handling.
 
-[![Build Status](https://jenkins.inoio.de/job/play-webshop/badge/icon)](http://jenkins.inoio.de/job/play-webshop/)
+[![Build Status](https://jenkins.inoio.de/job/play-product-finder/badge/icon)](http://jenkins.inoio.de/job/play-product-finder/)
 
 This project demonstrates:
 
