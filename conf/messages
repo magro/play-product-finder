@@ -3,6 +3,8 @@
 shops.list.title={0,choice,0#No shops|1#One shop|1<{0,number,integer} shops} found
 shops.theme.label=Theme
 
+shops.login.success=You've been logged in
+
 format.boolean=
 error.invalidCharset=Must be a valid charset (e.g. UTF-8)
 
