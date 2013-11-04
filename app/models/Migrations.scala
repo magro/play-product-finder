@@ -5,7 +5,7 @@ import net.fwbrasil.activate.migration.Migration
 
 class CreateSchema extends Migration {
 
-  override def timestamp = 201310242141L
+  override def timestamp = 201311042141L
 
   override def up = {
     table[Shop].removeTable.ifExists
@@ -61,7 +61,7 @@ object SeedShops {
 
 class SeedData extends Migration {
 
-  override def timestamp = 201310242142L
+  override def timestamp = 201311042142L
 
   override def down = {
     customScript {
