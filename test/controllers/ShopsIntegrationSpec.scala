@@ -17,7 +17,7 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
 
     "work from within a browser" inBrowserWithActivate { browser =>
 
-      browser.goTo("http://localhost:3333/")
+      browser.goTo("http://localhost:3333" + routes.ShopsController.list().url)
 
       // Login
       browser.url() must endWith(routes.ShopsController.login.url)
@@ -29,7 +29,7 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
       browser.$("#user").first.getText must contain(ShopsSecurity.ValidUsername)
 
 
-      browser.$("header h1").first.getText must equalTo("Play sample application — Shopping search buddy")
+      browser.$("header h1").first.getText must equalTo("Play sample — product finder")
       browser.$("section h1").first.getText must equalTo("3 shops found")
 
       browser.$("#pagination li.current").first.getText must equalTo("Displaying 1 to 3 of 3")

@@ -16,15 +16,6 @@ class ShopsControllerSpec extends Specification with ActivateTest {
   private def AuthenticatedFakeRequest() = FakeRequest().withSession(ShopsSecurity.Username -> "foo@bar.org")
 
   "ShopsController" should {
-    
-    "redirect to the shop list on /" inActivate {
-
-      val result = controllers.ShopsController.index(FakeRequest())
-
-      status(result) must equalTo(SEE_OTHER)
-      redirectLocation(result) must beSome.which(_ == routes.ShopsController.list().url)
-
-    }
 
     "redirect to login for unauthenticated /shops request" inActivate {
 
