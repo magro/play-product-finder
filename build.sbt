@@ -34,6 +34,8 @@ requireJs += "main.js"
 
 requireNativePath := Some("/usr/local/lib/node_modules/requirejs/bin/r.js")
 
+templatesImport += "net.fwbrasil.activate.entity.map.MutableEntityMap"
+
 EclipseKeys.preTasks := Seq() // don't run compile before eclipse
 
 EclipseKeys.withSource := true
