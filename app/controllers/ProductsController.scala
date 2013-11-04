@@ -19,22 +19,17 @@ import scala.collection.immutable.TreeMap
 import scala.collection.Iterable
 import business.ProductSearch
 
-
-object Foo extends App {
-  case class Version(major: Int, minor: Int, bugfix: Int) {
-    private val version = "(\\d+)\\.(\\d+)\\.(\\d+)".r
-    def apply(v: String): Option[Version] = v match {
-      case version(maj, min, fix) => Some(Version(maj.toInt, min.toInt, fix.toInt))
-    }
-  } 
-  
-  println("""
-          |This project uses Play %1$s while your Play installation uses %2$s!
-          |Update the Play sbt-plugin version to %2$s (usually in project/plugins.sbt) or install Play %1$s" 
-        """.stripMargin.format("2.2.1", "2.2.0"))
-}
-
 object ProductsController extends Controller {
+
+  /**
+   * This result directly redirects to the shop list.
+   */
+  private val Home = Redirect(routes.ProductsController.search())
+
+  /**
+   * Handle default path requests, redirect to search
+   */
+  def index = Action { Home }
 
   /**
    * Search in all active shops with the given query and display found products.

@@ -22,7 +22,7 @@ object ShopsController extends Controller with ShopsSecurity {
   val defaultTheme = "default"
 
   /**
-   * This result directly redirect to the application home.
+   * This result directly redirects to the shop list.
    */
   private val Home = Redirect(routes.ShopsController.list(0, 2, ""))
 
@@ -55,11 +55,6 @@ object ShopsController extends Controller with ShopsSecurity {
   }
 
   // -- Actions
-
-  /**
-   * Handle default path requests, redirect to list
-   */
-  def index = Action { Home }
 
   /**
    * Display the paginated list of shops.
