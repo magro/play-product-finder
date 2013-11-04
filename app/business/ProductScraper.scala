@@ -5,12 +5,11 @@ import org.joda.money.{CurrencyUnit, Money}
 import org.joda.money.format.MoneyFormatterBuilder
 import play.api.libs.ws.Response
 import scala.concurrent.Future
-import scala.xml._
-import scales.utils._
-import scales.utils.ScalesUtils._
+import scala.xml.Source
+import scales.utils.top
 import scales.xml._
 import scales.xml.ScalesXml._
-import scales.xml.jaxen._
+import scales.xml.jaxen.ScalesXPath
 import scales.xml.parser.sax.DefaultSaxSupport
 import scales.utils.resources.SimpleUnboundedPool
 
@@ -34,7 +33,7 @@ trait ScrapingDescription {
 }
 
 trait WebShop extends ScrapingDescription {
-  def search(query: String): Future[Response]
+  def search(query: String, timeoutInMs: Int = 5000): Future[Response]
   val responseEncoding: Option[String] = None
   val shortName: String
 }

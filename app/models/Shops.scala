@@ -6,6 +6,7 @@ import scales.xml.jaxen.ScalesXPath
 import net.fwbrasil.radon.transaction.TransactionalExecutionContext
 import net.fwbrasil.activate.statement.query.OrderByCriteria
 import scala.concurrent.Future
+import scala.concurrent.duration.Duration
 import play.api.libs.ws.WS
 import play.api.libs.ws.Response
 import play.api.Logger
@@ -15,15 +16,17 @@ case class ShopScrapingDescription(shortName: String, queryUrlTemplate: String, 
   itemXPath: ScalesXPath, nameXPath: ScalesXPath, priceXPath: ScalesXPath,
   imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends WebShop {
 
-  def search(query: String): Future[Response] = {
+  def search(query: String, timeoutInMs: Int): Future[Response] = {
     // "http://www.fcsp-shop.com/advanced_search_result.php?keywords={query}"
     ShopScrapingDescription.parseQueryUrlTemplate(queryUrlTemplate).map { case (url, queryParams, searchParam) =>
       val ws = WS.url(url)
         .withQueryString(queryParams:_*)
         .withQueryString(searchParam -> queryUrlEncoding.map(enc => java.net.URLEncoder.encode(query, enc)).getOrElse(query))
         .withHeaders("Accept-Language" -> "de,en")
+        .withRequestTimeout(timeoutInMs)
 
-      Logger.debug("Requesting " + ws.toString)
+      
+      Logger.debug(s"Requesting ${ws.url}?${ws.queryString.map{case (k, v) => k +"="+ v.head}.mkString("&")}")
 
       ws.get
     }.getOrElse(throw new IllegalStateException("Unsupported queryUrlTemplate: " + queryUrlTemplate))
