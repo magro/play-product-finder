@@ -6,6 +6,7 @@ import play.api.data._
 import play.api.data.validation.Constraints._
 import play.api.data.Forms._
 import play.api.i18n.Messages
+import business.StaticAuthenticator
 
 private[controllers] object ShopsSecurity {
 
@@ -13,14 +14,12 @@ private[controllers] object ShopsSecurity {
   val Password = "password"
   val OriginalUrl = "originalUrl"
 
-  val ValidUsername = "play@example.com"
-  val ValidPassword = "secret"
-
 }
 
 private[controllers] trait ShopsSecurity { self: Controller =>
 
   import ShopsSecurity._
+  import business.StaticAuthenticator
 
   private[controllers] object Authenticated extends AuthenticatedBuilder(req => getUserFromRequest(req), onUnauthorized)
 
@@ -59,12 +58,9 @@ private[controllers] trait ShopsSecurity { self: Controller =>
       // binding success, getting the actual value
       loginData => loginData match {
         case (username, password) => {
-          if (!ValidUsername.equals(username) || !ValidPassword.equals(password)) {
-            val form = loginForm.bindFromRequest
-            if (!ValidUsername.equals(username))
-              BadRequest(views.html.login(form.withError(Username, "invalid")))
-            else
-              BadRequest(views.html.login(form.withError(Password, "invalid")))
+          if (!StaticAuthenticator.authenticate(username, password)) {
+            val form = loginForm.bindFromRequest.withGlobalError(Messages("shops.login.denied"))
+            BadRequest(views.html.login(form))
           } else {
             request.session.get(OriginalUrl)
               .map(origUrl => Redirect(origUrl))

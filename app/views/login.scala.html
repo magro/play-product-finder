@@ -11,8 +11,8 @@
         <h1>Sign in</h1>
         
         @if(loginForm.hasGlobalErrors) {
-            <ul class="alert alert-error">
-            @loginForm.globalErrors.foreach { error =>
+            <ul class="alert alert-error unstyled">
+            @loginForm.globalErrors.map { error =>
                 <li>@error.message</li>
             }
             </ul>

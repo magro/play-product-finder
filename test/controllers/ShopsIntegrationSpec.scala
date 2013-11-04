@@ -5,6 +5,7 @@ import play.api.test._
 import play.api.test.Helpers._
 import org.fluentlenium.core.filter.FilterConstructor._
 import net.fwbrasil.activate.test._
+import business.StaticAuthenticator._
 
 class ShopsIntegrationSpec extends Specification with ActivateTest {
 
@@ -21,12 +22,12 @@ class ShopsIntegrationSpec extends Specification with ActivateTest {
 
       // Login
       browser.url() must endWith(routes.ShopsController.login.url)
-      browser.$("#username").text(ShopsSecurity.ValidUsername)
-      browser.$("#password").text(ShopsSecurity.ValidPassword)
+      browser.$("#username").text(ValidUsername)
+      browser.$("#password").text(ValidPassword)
       browser.$("input.btn-primary").click()
 
       browser.url() must endWith(routes.ShopsController.list().url)
-      browser.$("#user").first.getText must contain(ShopsSecurity.ValidUsername)
+      browser.$("#user").first.getText must contain(ValidUsername)
 
 
       browser.$("header h1").first.getText must equalTo("Play sample — product finder")

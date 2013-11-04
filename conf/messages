@@ -3,6 +3,7 @@
 shops.list.title={0,choice,0#No shops|1#One shop|1<{0,number,integer} shops} found
 shops.theme.label=Theme
 
+shops.login.denied=The supplied credentials are invalid, please try again (any hint below?)
 shops.login.success=You've been logged in
 
 format.boolean=
