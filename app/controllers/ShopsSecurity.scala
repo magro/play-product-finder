@@ -56,8 +56,8 @@ private[controllers] trait ShopsSecurity { self: Controller =>
         BadRequest(views.html.login(formWithErrors))
       },
       // binding success, getting the actual value
-      loginData => loginData match {
-        case (username, password) => {
+      {
+        case (username, password) =>
           if (!StaticAuthenticator.authenticate(username, password)) {
             val form = loginForm.bindFromRequest.withGlobalError(Messages("shops.login.denied"))
             BadRequest(views.html.login(form))
@@ -67,7 +67,6 @@ private[controllers] trait ShopsSecurity { self: Controller =>
               .getOrElse(Redirect(routes.ShopsController.list()))
               .withSession(Username -> username).flashing("success" -> Messages("shops.login.success"))
           }
-        }
       })
   }
 
