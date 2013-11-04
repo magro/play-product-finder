@@ -17,6 +17,38 @@ class CreateSchema extends Migration {
   }
 }
 
+class AddShopNameIndex extends Migration {
+  override def timestamp = 201311042142L
+  override def up = table[Shop].addIndex("name", "idx_shop_name").ifNotExists
+}
+
+/*
+class AddShopQueryUrlEncoding extends Migration {
+  override def timestamp = 201311042144L
+  override def up = table[Shop].addColumn(_.column[String]("queryUrlEncoding")).ifNotExists
+}
+*/
+
+class SeedData extends Migration {
+
+  override def timestamp = 201311042151L
+
+  override def up = {
+    customScript {
+      all[Shop].foreach(_.delete)
+      SeedShops.fcspShop
+      SeedShops.kiezkicker
+      SeedShops.nixgut
+    }
+  }
+
+  override def down = {
+    customScript {
+      all[Shop].foreach(_.delete)
+    }
+  }
+}
+
 object SeedShops {
 
   def fcspShop = new Shop("FC St. Pauli", Some("fcsp-shop"), "http://www.fcsp-shop.com/",
@@ -57,24 +89,4 @@ object SeedShops {
     ".//div[@class='productListing1ColPriceInfo']/text()",
     ".//div[@class='productListing1ColBodyImg']/a/img/@src",
     ".//div[@class='productListing1ColBodyImg']/a/@href")
-}
-
-class SeedData extends Migration {
-
-  override def timestamp = 201311042142L
-
-  override def down = {
-    customScript {
-      all[Shop].foreach(_.delete)
-    }
-  }
-
-  override def up = {
-    customScript {
-      all[Shop].foreach(_.delete)
-      SeedShops.fcspShop
-      SeedShops.kiezkicker
-      SeedShops.nixgut
-    }
-  }
 }

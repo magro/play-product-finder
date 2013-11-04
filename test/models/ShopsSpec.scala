@@ -29,9 +29,7 @@ class ShopsSpec extends Specification with AsyncActivateTest
 
     "be created and retrieved by id" inActivate {
       import shopPersistenceContext._
-      val item = transactional {
-        newShop("shop1")
-      }
+      val item = transactional(newShop("shop1"))
       transactional {
         val Some(shop) = byId[Shop](item.id)
         shop.name must equalTo("shop1")
@@ -40,9 +38,7 @@ class ShopsSpec extends Specification with AsyncActivateTest
 
     "be created and retrieved by id async" inActivate {
       import shopPersistenceContext._
-      val item = transactional {
-        newShop("shop1")
-      }
+      val item = transactional(newShop("shop1"))
       val shop = await(asyncTransactionalChain { implicit ctx =>
         asyncById[Shop](item.id)
       })
@@ -51,9 +47,7 @@ class ShopsSpec extends Specification with AsyncActivateTest
 
     "be created and selected async" inActivate {
       import shopPersistenceContext._
-      val item = transactional {
-        newShop("shop1")
-      }
+      val item = transactional(newShop("shop1"))
       val shops = await(asyncTransactionalChain { implicit ctx =>
         asyncSelect[Shop] where(_.id :== item.id)
       })
@@ -62,9 +56,7 @@ class ShopsSpec extends Specification with AsyncActivateTest
 
     "be created and queried async" inActivate {
       import shopPersistenceContext._
-      val item = transactional {
-        newShop("shop1")
-      }
+      val item = transactional(newShop("shop1"))
       val shops = await(asyncTransactionalChain { implicit ctx =>
         asyncQuery { (s: Shop) => where(s.id :== item.id) select (s) }
       })

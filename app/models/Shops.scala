@@ -11,57 +11,6 @@ import play.api.libs.ws.WS
 import play.api.libs.ws.Response
 import play.api.Logger
 
-case class ShopScrapingDescription(shortName: String, queryUrlTemplate: String, queryUrlEncoding: Option[String] = None,
-  override val responseEncoding: Option[String] = None, imageUrlBase: Option[String] = None,
-  itemXPath: ScalesXPath, nameXPath: ScalesXPath, priceXPath: ScalesXPath,
-  imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends WebShop {
-
-  def search(query: String, timeoutInMs: Int): Future[Response] = {
-    // "http://www.fcsp-shop.com/advanced_search_result.php?keywords={query}"
-    ShopScrapingDescription.parseQueryUrlTemplate(queryUrlTemplate).map { case (url, queryParams, searchParam) =>
-      val ws = WS.url(url)
-        .withQueryString(queryParams:_*)
-        .withQueryString(searchParam -> queryUrlEncoding.map(enc => java.net.URLEncoder.encode(query, enc)).getOrElse(query))
-        .withHeaders("Accept-Language" -> "de,en")
-        .withRequestTimeout(timeoutInMs)
-
-      
-      Logger.debug(s"Requesting ${ws.url}?${ws.queryString.map{case (k, v) => k +"="+ v.head}.mkString("&")}")
-
-      ws.get
-    }.getOrElse(throw new IllegalStateException("Unsupported queryUrlTemplate: " + queryUrlTemplate))
-  }
-
-}
-
-object ShopScrapingDescription {
-  
-  private val queryUrlPattern = "(.*)\\?(?:(.*)&)?(.+)=\\{query\\}".r
-  private[models] def parseQueryUrlTemplate(queryUrlTemplate: String): Option[(String, List[(String, String)], String)] = queryUrlTemplate match {
-    case queryUrlPattern(url, queryParamsString, queryParam) => {
-      val tokens = if(queryParamsString == null) Nil else
-        queryParamsString.split("&").toList.map{ queryParam =>
-          val keyValue = queryParam.split("=")
-          (keyValue(0), keyValue(1))
-        }
-      Some((url, tokens, queryParam))
-    }
-    case _ => None
-  }
-
-  private def localXPath(xpath: String) = ScalesXPath(xpath).withNameConversion(ScalesXPath.localOnly)
-  
-  def apply(shop: Shop): ShopScrapingDescription = ShopScrapingDescription(
-      shortName = shop.shortName.getOrElse(shop.name),
-      queryUrlTemplate = shop.queryUrlTemplate,
-      queryUrlEncoding = shop.queryUrlEncoding,
-      responseEncoding = shop.responseEncoding,
-      imageUrlBase = shop.imageUrlBase,
-      itemXPath = localXPath(shop.itemXPath), nameXPath = localXPath(shop.nameXPath),
-      priceXPath = localXPath(shop.priceXPath), imageUrlXPath = localXPath(shop.imageUrlXPath),
-      detailsUrlXPath = localXPath(shop.detailsUrlXPath))
-}
-
 /**
  * Helper for pagination.
  */
@@ -103,8 +52,8 @@ object Shop {
   }
 
   def list(page: Int = 0, pageSize: Int = 10, orderBy: Int = 2, filter: String = "*")(implicit ctx: TransactionalExecutionContext): Future[Page[Shop]] = {
-    val pagination = asyncPaginatedQuery { ((s: Shop) =>
-      where(toUpperCase(s.name) like filter.toUpperCase) select (s) orderBy (order(orderBy, s)))
+    val pagination = asyncPaginatedQuery { (s: Shop) =>
+      where(toUpperCase(s.name) like filter.toUpperCase) select (s) orderBy (order(orderBy, s))
     }
 
     pagination.navigator(pageSize).flatMap { navigator =>
@@ -134,5 +83,55 @@ object Shop {
       s.id
   }
 
+}
+
+case class ShopScrapingDescription(shortName: String, queryUrlTemplate: String, queryUrlEncoding: Option[String] = None,
+  override val responseEncoding: Option[String] = None, imageUrlBase: Option[String] = None,
+  itemXPath: ScalesXPath, nameXPath: ScalesXPath, priceXPath: ScalesXPath,
+  imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends WebShop {
+
+  def search(query: String, timeoutInMs: Int): Future[Response] = {
+    // "http://www.fcsp-shop.com/advanced_search_result.php?keywords={query}"
+    ShopScrapingDescription.parseQueryUrlTemplate(queryUrlTemplate).map { case (url, queryParams, searchParam) =>
+      val ws = WS.url(url)
+        .withQueryString(queryParams:_*)
+        .withQueryString(searchParam -> queryUrlEncoding.map(enc => java.net.URLEncoder.encode(query, enc)).getOrElse(query))
+        .withHeaders("Accept-Language" -> "de,en")
+        .withRequestTimeout(timeoutInMs)
+
+      Logger.debug(s"Requesting ${ws.url}?${ws.queryString.map{case (k, v) => k +"="+ v.head}.mkString("&")}")
+
+      ws.get
+    }.getOrElse(throw new IllegalStateException("Unsupported queryUrlTemplate: " + queryUrlTemplate))
+  }
+
+}
+
+object ShopScrapingDescription {
+
+  private val queryUrlPattern = "(.*)\\?(?:(.*)&)?(.+)=\\{query\\}".r
+  private[models] def parseQueryUrlTemplate(queryUrlTemplate: String): Option[(String, List[(String, String)], String)] = queryUrlTemplate match {
+    case queryUrlPattern(url, queryParamsString, queryParam) => {
+      val tokens = if(queryParamsString == null) Nil else
+        queryParamsString.split("&").toList.map{ queryParam =>
+          val keyValue = queryParam.split("=")
+          (keyValue(0), keyValue(1))
+        }
+      Some((url, tokens, queryParam))
+    }
+    case _ => None
+  }
+
+  private def localXPath(xpath: String) = ScalesXPath(xpath).withNameConversion(ScalesXPath.localOnly)
+
+  def apply(shop: Shop): ShopScrapingDescription = ShopScrapingDescription(
+      shortName = shop.shortName.getOrElse(shop.name),
+      queryUrlTemplate = shop.queryUrlTemplate,
+      queryUrlEncoding = shop.queryUrlEncoding,
+      responseEncoding = shop.responseEncoding,
+      imageUrlBase = shop.imageUrlBase,
+      itemXPath = localXPath(shop.itemXPath), nameXPath = localXPath(shop.nameXPath),
+      priceXPath = localXPath(shop.priceXPath), imageUrlXPath = localXPath(shop.imageUrlXPath),
+      detailsUrlXPath = localXPath(shop.detailsUrlXPath))
 }
 
