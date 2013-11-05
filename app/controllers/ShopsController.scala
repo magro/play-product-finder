@@ -11,6 +11,7 @@ import net.fwbrasil.activate.play.EntityForm._
 import play.api._
 import play.api.data._
 import play.api.data.Forms._
+import play.api.i18n.Messages
 import play.api.mvc._
 import views._
 import play.api.http.Status
@@ -129,7 +130,7 @@ object ShopsController extends Controller with ShopsSecurity {
           Future.successful(BadRequest(html.editForm(id, formWithErrors))),
         shopData => {
           shopData.asyncUpdateEntity(id).map { shop =>
-            Home.flashing("success" -> "Shop %s has been updated".format(shop.name))
+            Home.flashing("success" -> s"Shop ${shop.name} has been updated")
           }
         })
     }
