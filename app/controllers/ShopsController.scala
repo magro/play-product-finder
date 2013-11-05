@@ -65,11 +65,17 @@ object ShopsController extends Controller with ShopsSecurity {
    */
   def list(page: Int, orderBy: Int, filter: String) = Authenticated.async { implicit request =>
     asyncTransactionalChain { implicit ctx =>
-      Shop.list(page = page, orderBy = orderBy, filter = ("*" + filter + "*")).map {
-        page => Ok(html.shopList(page, orderBy, filter))
+      Shop.list(page = page, orderBy = orderBy, filter = ("*" + filter + "*")).map { shops =>
+        Ok(html.shopList(shops, orderBy, filter))
       }
     }
   }
+
+//  /* Sync list action for demo purposes */
+//  def listSync(page: Int, orderBy: Int, filter: String) = Authenticated { implicit request =>
+//    val shops = Shop.listSync(page = page, orderBy = orderBy, filter = ("*" + filter + "*"))
+//    Ok(html.shopList(shops, orderBy, filter))
+//  }
 
   /**
    * Display the 'new shop form'.

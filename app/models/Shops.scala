@@ -64,6 +64,19 @@ object Shop {
     }
   }
 
+  def listSync(page: Int = 0, pageSize: Int = 10, orderBy: Int = 2, filter: String = "*"): Page[Shop] = {
+    val pagination = paginatedQuery { (s: Shop) =>
+      where(toUpperCase(s.name) like filter.toUpperCase) select (s) orderBy (order(orderBy, s))
+    }
+
+    val navigator = pagination.navigator(pageSize)
+    if (navigator.numberOfResults > 0) {
+      val p = navigator.page(page)
+      Page(p, page, page * pageSize, navigator.numberOfResults)
+    } else
+      Page(Nil, 0, 0, 0)
+  }
+
   private def order(orderBy: Int, s: models.Shop): OrderByCriteria[_] = orderBy match {
     case -2 =>
       s.name desc
