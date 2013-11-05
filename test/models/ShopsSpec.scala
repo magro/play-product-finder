@@ -11,17 +11,9 @@ import shopPersistenceContext._
 @RunWith(classOf[JUnitRunner])
 class ShopsSpec extends Specification with AsyncActivateTest 
 	with DefaultAwaitTimeout with FutureAwaits {
-  
-  // -- Date helpers
-
-  def dateIs(date: java.util.Date, str: String) = (new java.text.SimpleDateFormat("yyyy-MM-dd")).format(date) == str
-
-  // --
 
   override def strategy: Strategy = asyncCleanDatabaseStrategy
   override def context(app: play.api.Application) = shopPersistenceContext
-
-  // reinitializeContext
 
   "Shop model" should {
     
