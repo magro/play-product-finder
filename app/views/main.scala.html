@@ -2,55 +2,17 @@
 @import helper._
 @import ShopsController.theme
 
-@**************************************
-* Helper to get the bootstrap css     *
-**************************************@
-@bootstrapCss = @{
-  val theme = ShopsController.theme
-  if(theme == ShopsController.defaultTheme)
-    "stylesheets/bootstrap.min.css"
-  else
-    "stylesheets/bootstrap_" + theme + ".min.css"
-}
-
-@*********************************************************
-* Helper for the nav options menu (user/themes selector) *
-*********************************************************@
-@navOptionsMenu = {
-  <ul id="nav-options" class="nav pull-right">
-    <li id="fat-menu" class="dropdown">
-      @ShopsController.loggedInUser.map { username =>
-         <a href="#" id="user" role="button" class="dropdown-toggle" data-toggle="dropdown">@username<b class="caret"></b></a>
-         <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
-           <li role="presentation"><a id="logout" role="menuitem" tabindex="-1" href="@routes.ShopsController.logout()">Logout</a></li>
-           <li role="presentation" class="divider"></li>
-      }.getOrElse {
-        <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">@Messages("shops.theme.label")<b class="caret"></b></a>
-        <ul class="dropdown-menu" role="menu" aria-labelledby="drop3">
-      }
-      @defining(ShopsController.theme) { currentTheme =>
-        <!-- dropdown menu links -->
-        @for(entry <- Seq(
-          "default" -> "Default",
-          "cyborg" -> "Cyborg",
-          "flatly" -> "Flatly",
-          "slate" -> "Slate",
-          "spacelab" -> "Spacelab",
-          "superhero" -> "Superhero")) {
-            <li role="presentation" @if(currentTheme == entry._1) {class="active"}>
-              <a role="menuitem" tabindex="-1" href="@routes.ShopsController.selectTheme(entry._1)">@entry._2</a>
-            </li>
-        }
-      }
-      </ul>
-    </li>
-  </ul>
-}
-
 <!DOCTYPE html>
 <html>
     <head>
         <title>Play! Product Finder / Admin / @title</title>
+        @bootstrapCss = @{
+          val theme = ShopsController.theme
+          if(theme == ShopsController.defaultTheme)
+            "stylesheets/bootstrap.min.css"
+          else
+            "stylesheets/bootstrap_" + theme + ".min.css"
+        }
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at(bootstrapCss)">
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -66,7 +28,7 @@
                             Play sample &mdash; product finder
                         </a>
                     </h1>
-                    @navOptionsMenu
+                    @tags.navOptionsMenu()
                 </div>
             </div>
         </header>
