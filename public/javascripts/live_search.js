@@ -1,6 +1,5 @@
-window.myApp = window.myApp || {};
+define(['jquery', 'ajax_utils'], function($, ajaxUtils) {
 
-window.myApp.AjaxInput = (function() {
     "use strict";
 
     var queryStringToObject = function() {
@@ -96,7 +95,7 @@ window.myApp.AjaxInput = (function() {
 
                 // Update window/page
                 setWindowTitleForQuery(q);
-                window.ajaxUtils.updateHtmlBySelector(data);
+                ajaxUtils.updateHtmlBySelector(data);
 
                 $("#overlay").fadeOut(500);
             },
@@ -171,6 +170,7 @@ window.myApp.AjaxInput = (function() {
     };
 
     return {
-        init : init
-    };
-})();
+        init: init
+    }
+
+});
