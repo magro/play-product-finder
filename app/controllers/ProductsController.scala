@@ -54,7 +54,8 @@ object ProductsController extends Controller {
   def jsRoutes = Action { implicit request =>
     Ok(Routes.javascriptRouter("jsRoutes")(
       routes.javascript.ProductsController.search,
-      routes.javascript.ProductsController.liveSearch)).as("text/javascript")
+      routes.javascript.ProductsController.liveSearch
+    )).as("text/javascript")
   }
 
   private def searchProducts(query: String, sortBy: ProductsSorting): Future[Iterable[models.ProductInfo]] = {
