@@ -8,12 +8,18 @@ class CreateSchema extends Migration {
   override def timestamp = 201311042141L
 
   override def up = {
-    table[Shop].removeTable.ifExists
     createTableForEntity[Shop].ifNotExists
+
+//    removeReferencesForAllEntities.ifExists
+//    removeAllEntitiesTables.ifExists
+//    createTableForAllEntities.ifNotExists
   }
 
   override def down = {
     table[Shop].removeTable.ifExists
+
+//    removeReferencesForAllEntities.ifExists
+//    removeAllEntitiesTables.ifExists
   }
 }
 
