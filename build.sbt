@@ -31,6 +31,8 @@ playScalaSettings
 
 requireJs += "main.js"
 
+requireJsShim += "main.js"
+
 requireNativePath := Some("/usr/local/lib/node_modules/requirejs/bin/r.js")
 
 templatesImport += "net.fwbrasil.activate.entity.map.MutableEntityMap"
