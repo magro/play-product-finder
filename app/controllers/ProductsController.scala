@@ -60,7 +60,7 @@ object ProductsController extends Controller {
         routes.javascript.ProductsController.liveSearch
       )
       // Plain, not require.js'ed:
-      // Ok(s"define(function () { $jsRoutes; return jsRoutes; });").as(JAVASCRIPT)
+      // Ok(jsRoutes).as(JAVASCRIPT)
       // For require.js using "define"
       Ok(s"define(function () { $jsRoutes; return jsRoutes; });").as(JAVASCRIPT)
     }
