@@ -10,6 +10,7 @@ import scala.concurrent.duration.Duration
 import play.api.libs.ws.WS
 import play.api.libs.ws.Response
 import play.api.Logger
+import java.net.URLEncoder
 
 /**
  * Helper for pagination.
@@ -99,23 +100,29 @@ object Shop {
 }
 
 case class ShopScrapingDescription(shortName: String, queryUrlTemplate: String, queryUrlEncoding: Option[String] = None,
-  override val responseEncoding: Option[String] = None, imageUrlBase: Option[String] = None,
+  responseEncoding: Option[String] = None, imageUrlBase: Option[String] = None,
   itemXPath: ScalesXPath, nameXPath: ScalesXPath, priceXPath: ScalesXPath,
   imageUrlXPath: ScalesXPath, detailsUrlXPath: ScalesXPath) extends WebShop {
 
-  def search(query: String, timeoutInMs: Int): Future[Response] = {
+  import scala.concurrent.ExecutionContext.Implicits.global
+
+  def search(query: String, timeoutInMs: Int): Future[String] = {
     // "http://www.fcsp-shop.com/advanced_search_result.php?keywords={query}"
     ShopScrapingDescription.parseQueryUrlTemplate(queryUrlTemplate).map { case (url, queryParams, searchParam) =>
       val ws = WS.url(url)
         .withQueryString(queryParams:_*)
-        .withQueryString(searchParam -> queryUrlEncoding.map(enc => java.net.URLEncoder.encode(query, enc)).getOrElse(query))
+        .withQueryString(searchParam -> queryUrlEncoding.map(enc => URLEncoder.encode(query, enc)).getOrElse(query))
         .withHeaders("Accept-Language" -> "de,en")
         .withRequestTimeout(timeoutInMs)
 
       Logger.debug(s"Requesting ${ws.url}?${ws.queryString.map{case (k, v) => k +"="+ v.head}.mkString("&")}")
 
-      ws.get
+      ws.get.map(decodeBody)
     }.getOrElse(throw new IllegalStateException("Unsupported queryUrlTemplate: " + queryUrlTemplate))
+  }
+
+  private def decodeBody(resp: Response): String = {
+    responseEncoding.map(charset => resp.ahcResponse.getResponseBody(charset)).getOrElse(resp.body)
   }
 
 }

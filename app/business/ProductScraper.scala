@@ -33,8 +33,10 @@ trait ScrapingDescription {
 }
 
 trait WebShop extends ScrapingDescription {
-  def search(query: String, timeoutInMs: Int = 5000): Future[Response]
-  val responseEncoding: Option[String] = None
+  /**
+   * Performs a search using the given query and returns the response body as string.
+   */
+  def search(query: String, timeoutInMs: Int = 5000): Future[String]
   val shortName: String
 }
 
@@ -44,20 +46,11 @@ object ProductScraper {
     
     val doc = loadXmlReader(Source.fromString(content), strategy = defaultPathOptimisation, parsers = NuValidatorFactoryPool)
     val root = top(doc)
-    
-//    println("Got content " + content)
-//    
-//    sd.itemXPath.evaluate(root).foreach{ item => item match {
-//        case Right(xpath) => println("Got name " + queryXPath(xpath, sd.nameXPath).getOrElse("-"))
-//        case Left(foo) => println("Got foo " + foo)
-//      }
-//    }
 
     val products = shop.itemXPath.evaluate(root).foldLeft(List.empty[ProductInfo]) { (acc, item) =>
       item match {
         case Right(xpath) => {
           val subtree = xpath // top(xpath.tree)
-//          println("** " + queryXPath(xpath, ShopScrapingDescription.localXPath("./a/@title")))
           val name = queryXPath(subtree, shop.nameXPath).getOrElse("-")
           val price: Double = queryXPath(subtree, shop.priceXPath).flatMap(parseDouble).getOrElse(0.0)
           val imageUrl = queryXPath(subtree, shop.imageUrlXPath).map { imgUrl =>
