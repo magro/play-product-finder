@@ -1,12 +1,14 @@
 package controllers
 
 import play.api._
+import play.api.cache.Cached
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import play.api.libs.ws.WS
 import play.api.libs.json._
 import play.api.i18n.Messages
+import Play.current
 import views._
 import models._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
@@ -51,11 +53,17 @@ object ProductsController extends Controller {
     })
   }
 
-  def jsRoutes = Action { implicit request =>
-    Ok(Routes.javascriptRouter("jsRoutes")(
-      routes.javascript.ProductsController.search,
-      routes.javascript.ProductsController.liveSearch
-    )).as("text/javascript")
+  def jsRoutes = Cached("jsroutes") {
+    Action { implicit request =>
+      val jsRoutes = Routes.javascriptRouter("jsRoutes")(
+        routes.javascript.ProductsController.search,
+        routes.javascript.ProductsController.liveSearch
+      )
+      // Plain, not require.js'ed:
+      // Ok(s"define(function () { $jsRoutes; return jsRoutes; });").as(JAVASCRIPT)
+      // For require.js using "define"
+      Ok(s"define(function () { $jsRoutes; return jsRoutes; });").as(JAVASCRIPT)
+    }
   }
 
   private def searchProducts(query: String, sortBy: ProductsSorting): Future[Iterable[models.ProductInfo]] = {

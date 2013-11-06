@@ -16,8 +16,7 @@ resolvers += "linter" at "http://hairyfotr.github.io/linteRepo/releases"
 addCompilerPlugin("com.foursquare.lint" %% "linter" % "0.1-SNAPSHOT")
 
 libraryDependencies ++= Seq(
-  jdbc,
-  anorm,
+  cache,
   "net.fwbrasil" %% "activate-play" % "1.5-SNAPSHOT",
   "net.fwbrasil" %% "activate-jdbc-async" % "1.5-SNAPSHOT",
   "nu.validator.htmlparser" % "htmlparser" % "1.4",

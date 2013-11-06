@@ -1,4 +1,4 @@
-define(['jquery', 'ajax_utils'], function($, ajaxUtils) {
+define(['jquery', 'ajax_utils', 'jsRoutes'], function($, ajaxUtils, jsRoutes) {
 
     "use strict";
 

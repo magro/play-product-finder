@@ -10,8 +10,10 @@ GET    /                            controllers.ProductsController.index()
 GET    /search                      controllers.ProductsController.search(query ?= "", sortBy: controllers.ProductsSorting ?= controllers.SortByIndex)
 GET    /liveSearch                  controllers.ProductsController.liveSearch(query ?= "", sortBy: controllers.ProductsSorting ?= controllers.SortByIndex)
 
-GET    /jsRoutes                    controllers.ProductsController.jsRoutes
+# JavaScript Routes
+GET    /jsRoutes.js                 controllers.ProductsController.jsRoutes
 
+# Authentication
 GET    /login                       controllers.ShopsController.login
 POST   /login                       controllers.ShopsController.authenticate
 GET    /logout                      controllers.ShopsController.logout
