@@ -16,11 +16,17 @@ import play.api.mvc._
 import views._
 import play.api.http.Status
 import models.Shop
+import business.StaticAuthenticator
 
 object ShopsController extends Controller with ShopsSecurity {
   
   private val playThemeCookie = "play_theme"
   val defaultTheme = "default"
+
+  /**
+   * Provide authenticator as required by ShopsSecurity
+   */
+  override val authenticator = StaticAuthenticator
 
   /**
    * This result directly redirects to the shop list.

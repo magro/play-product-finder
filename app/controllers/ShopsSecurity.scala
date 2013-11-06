@@ -6,7 +6,7 @@ import play.api.data._
 import play.api.data.validation.Constraints._
 import play.api.data.Forms._
 import play.api.i18n.Messages
-import business.StaticAuthenticator
+import business.Authenticator
 
 private[controllers] object ShopsSecurity {
 
@@ -19,7 +19,8 @@ private[controllers] object ShopsSecurity {
 private[controllers] trait ShopsSecurity { self: Controller =>
 
   import ShopsSecurity._
-  import business.StaticAuthenticator
+
+  val authenticator: Authenticator
 
   private[controllers] object Authenticated extends AuthenticatedBuilder(req => getUserFromRequest(req), onUnauthorized)
 
@@ -58,7 +59,7 @@ private[controllers] trait ShopsSecurity { self: Controller =>
       // binding success, getting the actual value
       {
         case (username, password) =>
-          if (!StaticAuthenticator.authenticate(username, password)) {
+          if (!authenticator.authenticate(username, password)) {
             val form = loginForm.bindFromRequest.withGlobalError(Messages("shops.login.denied"))
             BadRequest(views.html.login(form))
           } else {
