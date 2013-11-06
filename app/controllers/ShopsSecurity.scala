@@ -75,7 +75,9 @@ private[controllers] trait ShopsSecurity { self: Controller =>
    * Logout the user, redirect to login.
    */
   def logout = Action { implicit request =>
-    Redirect(routes.ShopsController.login).withNewSession.flashing("success" -> "You've been logged out")
+    Redirect(routes.ShopsController.login)
+      .withNewSession
+      .flashing("success" -> "You've been logged out")
   }
 
   /**
