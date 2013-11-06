@@ -44,10 +44,10 @@ object Shop {
   
   // import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
-  def findActiveMapped[T](f: Shop => T): Future[List[T]] = asyncTransactionalChain { implicit ctx =>
+  def findActive[T](f: Shop => T): Future[List[T]] = asyncTransactionalChain { implicit ctx =>
     findActive(ctx).map(_.map(f))
   }
-  
+
   def findActive(implicit ctx: TransactionalExecutionContext): Future[List[Shop]] = {
     asyncQuery { (s: Shop) => where(s.active :== true) select (s) orderBy (s.id) }
   }

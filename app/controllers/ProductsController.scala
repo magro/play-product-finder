@@ -65,7 +65,7 @@ object ProductsController extends Controller {
 
   private def searchProducts(query: String, sortBy: ProductsSorting): Future[Iterable[models.ProductInfo]] = {
     for {
-      shops <- Shop.findActiveMapped(shop => shop.scrapingDescription)
+      shops <- Shop.findActive(shop => shop.scrapingDescription)
       products <- Future.sequence(shops.map(shop =>
         ProductSearch.search(query, shop).map(products => products.filter(p => !StringUtils.isEmpty(p.imageUrl)))))
     } yield sortBy.sort(products)
