@@ -17,16 +17,20 @@ object ProductSearch {
    */
   def search(query: String, shop: WebShop): Future[List[ProductInfo]] = {
 
-    val start = System.currentTimeMillis()
+    // Log how long a Future took to process
+    def withTiming[T](f: => Future[T]): Future[T] = {
+      val start = System.currentTimeMillis()
+      f.map {
+        case r =>
+          val latency = System.currentTimeMillis() - start
+          Logger.info(s"Response from ${shop.shortName} took $latency ms")
+          r
+      }
+    }
 
-    shop.search(query, 3000).map { content =>
-
-      Logger.debug(s"Response from ${shop.shortName} took ${System.currentTimeMillis() - start} ms")
-
-      // println("Got response body " + content)
+    withTiming(shop.search(query, 3000)).map( content =>
       ProductScraper.extractProducts(content, shop)
-
-    } recover { case e: TimeoutException =>
+    ) recover { case e: TimeoutException =>
       Logger.info(s"For ${shop.shortName}: $e")
       Nil
     }
