@@ -37,7 +37,9 @@ object ProductsController extends Controller {
    * Search in all active shops with the given query and display found products.
    */
   def search(query: String, sortBy: ProductsSorting = SortByIndex) = Action.async { implicit request =>
-    searchProducts(query, sortBy).map(products => Ok(html.productList(products, ProductsSorting.options, query, sortBy)))
+    searchProducts(query, sortBy).map(products =>
+      Ok(html.productList(products, ProductsSorting.options, query, sortBy))
+    )
   }
 
   def liveSearch(query: String, sortBy: ProductsSorting = SortByIndex) = Action.async { implicit request =>
@@ -63,7 +65,7 @@ object ProductsController extends Controller {
     }
   }
 
-  private def searchProducts(query: String, sortBy: ProductsSorting): Future[Iterable[models.ProductInfo]] = {
+  private def searchProducts(query: String, sortBy: ProductsSorting): Future[Iterable[ProductInfo]] = {
     for {
       shops <- Shop.findActive(shop => shop.scrapingDescription)
       products <- Future.sequence(shops.map(shop =>
